@@ -1,71 +1,109 @@
-/* General styles */
-body {
+/* Reset Styles */
+* {
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', sans-serif;
-    background: url('img.jpg') no-repeat center center/cover;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Body Styling */
+body {
+    background-color: #f0fff0;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-/* Header Styling */
-header {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
-    background: linear-gradient(90deg, #ff758c, #ff7eb3);
-    padding: 15px 30px;
+/* Container Styling */
+.container {
+    background: white;
+    padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-    margin-bottom: 30px;
-}
-
-/* Box container */
-.box {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 350px;
+    text-align: center;
 }
 
-/* Input fields */
-.input-box {
+/* Heading */
+.container h2 {
+    color: #008000;
+    margin-bottom: 1rem;
+}
+
+/* Input Fields */
+.input-group {
     position: relative;
-    margin: 20px 0;
-    display: flex;
-    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
 }
 
-.input-box input {
+.input-group input {
     width: 100%;
-    padding: 12px 12px 12px 40px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    background: #f3f3f3;
+    padding: 10px;
+    padding-right: 40px;
+    border: 2px solid #008000;
+    border-radius: 5px;
     outline: none;
+    font-size: 16px;
+}
+
+/* Eye Icon */
+.input-group i {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 10px;
+    background: #008000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
     transition: 0.3s;
 }
 
-.input-box input:focus {
-    background: #fff;
-    box-shadow: 0 0 10px rgba(255, 120, 150, 0.4);
+button:hover {
+    background: #006600;
 }
 
-/* Icon styling */
-.input-box i {
-    position: absolute;
-    left: 15px;
-    color: #777;
+/* Google Sign-Up Button */
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: white;
+    border: 2px solid #008000;
+    color: #008000;
+    margin-top: 10px;
+    transition: 0.3s;
 }
 
-/* Button styling */
-.submit {
-    background: linear-gradient(90deg, #ff758c, #ff7eb3);
+.google-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+.google-btn:hover {
+    background: #008000;
+    color: white;
+}
+
+/* Sign-Up Link */
+.signup-link {
+    margin-top: 10px;
+}
+
+.signup-link a {
+    color: #008000;
+    text-decoration: none;
+    font-weight: bold;
 }

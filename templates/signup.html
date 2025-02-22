@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - HIFI Delivery Eats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: url("/static/img/login\ \(2\).png") no-repeat center center/cover; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .signup-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            width: 400px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #1b5e20;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 26px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .input-group label span {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: #1b5e20;
+            outline: none;
+        }
+
+        .signup-btn {
+            background: linear-gradient(90deg, #1b5e20, #4caf50);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .signup-btn span {
+            margin-left: 8px;
+        }
+
+        .signup-btn:hover {
+            background: #256429;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 3px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="signup-container">
+        <h2>HIFI Delivery Eats</h2>
+
+        <form id="signup-form">
+            <div class="input-group">
+                <label for="username"><span>👤</span>Username</label>
+                <input type="text" id="username" placeholder="Enter your username" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email"><span>📧</span>Email</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+                <p class="error" id="email-error"></p>
+            </div>
+
+            <div class="input-group">
+                <label for="phone"><span>📞</span>Phone</label>
+                <input type="text" id="phone" placeholder="Enter your phone number" required>
+                <p class="error" id="phone-error"></p>
+            </div>
+
+            <div class="input-group">
+                <label for="password"><span>🔒</span>Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+                <p class="error" id="password-error"></p>
+            </div>
+
+            <div class="input-group">
+                <label for="address"><span>🏡</span>Address</label>
+                <textarea id="address" rows="2" placeholder="Enter your address" required></textarea>
+            </div>
+
+            <button type="submit" class="signup-btn">Sign Up <span>🚀</span></button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("signup-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            let email = document.getElementById("email").value;
+            let phone = document.getElementById("phone").value;
+            let password = document.getElementById("password").value;
+            let emailError = document.getElementById("email-error");
+            let phoneError = document.getElementById("phone-error");
+            let passwordError = document.getElementById("password-error");
+
+            emailError.innerText = "";
+            phoneError.innerText = "";
+            passwordError.innerText = "";
+
+            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                emailError.innerText = "Invalid email format";
+                return;
+            }
+
+            if (phone.length !== 10 || isNaN(phone)) {
+                phoneError.innerText = "Phone number must be 10 digits";
+                return;
+            }
+
+            if (password.length < 6) {
+                passwordError.innerText = "Password must be at least 6 characters";
+                return;
+            }
+
+            alert("Signup successful!");
+        });
+    </script>
+
+</body>
+</html>

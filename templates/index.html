@@ -1,93 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../static/css/style.css" />
-    <title>Hifi Delivery Website</title>
-  </head>
-  <body>
-    <!--========== SCROLL TOP ==========-->
-    <a href="#" class="scrolltop" id="scroll-top">
-      <i class="bx bx-chevron-up scrolltop__icon"></i>
-    </a>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIFI Delivery Eats - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
 
-    <!--========== HEADER ==========-->
-    <header class="l-header" id="header">
-      <nav class="nav bd-container">
-        <a href="#" class="nav__logo">Hifi Delivery Eats</a>
+        body {
+            background: url("/static/img/login\ \(2\).png") no-repeat center center/cover; 
+            background-color: #f0fff0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-        <div class="nav__menu" id="nav-menu">
-          <ul class="nav__list">
-            <li class="nav__item">
-              <form class="search-form">
-                <input
-                  type="text"
-                  class="search-input"
-                  placeholder="Search..."
-                  aria-label="Search"
-                />
-                <button type="submit" class="search-button">
-                  <i class="bx bx-search"></i>
-                </button>
-              </form>
-            </li>
-            <li class="nav__item">
-              <a href="#home" class="nav__link active-link">Home</a>
-            </li>
-            <li class="nav__item">
-              <a href="#menu" class="nav__link">Menu</a>
-            </li>
-            <li class="nav__item">
-              <a href="#cart" class="nav__link">Cart</a>
-            </li>
-            <li class="nav__item">
-              <a href="#about" class="nav__link">About</a>
-            </li>
-            <li class="nav__item">
-              <a href="#contact" class="nav__link">Contact us</a>
-            </li>
-            <li class="nav__item">
-              <a href="#contact" class="nav__link">Sign in</a>
-            </li>
-            <li>
-              <i class="bx bx-moon change-theme" id="theme-button"></i>
-            </li>
-          </ul>
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        .container h2 {
+            color: #008000;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            padding-right: 40px;
+            border: 2px solid #008000;
+            border-radius: 5px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #008000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #006600;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: white;
+            border: 2px solid #008000;
+            color: #008000;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .google-btn:hover {
+            background: #008000;
+            color: white;
+        }
+
+        .signup-link {
+            margin-top: 10px;
+        }
+
+        .signup-link a {
+            color: #008000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>HIFI Delivery Eats</h2>
+
+        <div class="input-group">
+            <input type="text" placeholder="Enter your email">
         </div>
 
-        <div class="nav__toggle" id="nav-toggle">
-          <i class="bx bx-menu"></i>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Enter your password">
+            <i onclick="togglePassword()">👁</i>
         </div>
-      </nav>
-    </header>
 
-    <main class="l-main">
-      <!--========== HOME ==========-->
-      <section class="home" id="home">
-        <div class="home__container bd-container bd-grid">
-          <div class="home__data">
-            <h1 class="home__title">Hifi Delivery Eats</h1>
-            <h2 class="home__subtitle">
-              Experience the best food delivery service with Hifi Delivery Eats!
-            </h2>
-            <a href="menu.html" class="button">View Menu</a>
-            <div class="delivered-meals">
-              <p class="delivered-text" id="dynamic-text">
-                <span>1,000+</span> meals delivered last week!
-              </p>
-            </div>
-          </div>
-          <img src="assets/img/home.png" alt="" class="home__img" />
-        </div>
-      </section>
-    </main>
+        <button>Login</button>
 
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/menu_script.js"></script>
-  </body>
+        <button class="google-btn">
+            <img src="https://img.icons8.com/color/24/000000/google-logo.png"/> Sign up with Google
+        </button>
+
+        <p class="signup-link">Don't have an account? <a href="#">Sign up</a></p>
+    </div>
+
+    <script>
+        function togglePassword() {
+            let pass = document.getElementById("password");
+            if (pass.type === "password") {
+                pass.type = "text";
+            } else {
+                pass.type = "password";
+            }
+        }
+    </script>
+
+</body>
 </html>

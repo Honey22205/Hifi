@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forgot Password | HIFI Delivery Eats</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #e0f7e9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .forgot-password-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 350px;
+      }
+      h2 {
+        color: #2e7d32;
+      }
+      p {
+        color: #666;
+        font-size: 14px;
+      }
+      label {
+        display: block;
+        font-weight: bold;
+        margin-top: 10px;
+        text-align: left;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+      button {
+        background-color: #2e7d32;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 15px;
+      }
+      button:hover {
+        background-color: #1b5e20;
+      }
+      .hidden {
+        display: none;
+      }
+      #successMessage {
+        color: green;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      .back-to-login a {
+        text-decoration: none;
+        color: #2e7d32;
+        font-weight: bold;
+      }
+      .back-to-login a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="forgot-password-container">
+      <h2>🔒 Forgot Password</h2>
+      <p>Enter your email address to receive a password reset link.</p>
+
+      <form id="forgotPasswordForm" action="/forget_password" method="POST">
+        <label for="email">📧 Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+        />
+
+        <button type="submit">Send Reset Link 📩</button>
+      </form>
+
+      <p id="successMessage" class="hidden">✅ Reset link sent successfully!</p>
+
+      <p class="back-to-login">⬅ <a href="index.html">Back to Login</a></p>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("forgotPasswordForm");
+        const successMessage = document.getElementById("successMessage");
+
+        form.addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent full page reload
+
+          const formData = new FormData(form);
+          const response = await fetch("/forget_password", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (response.ok) {
+            console.log(response);
+            successMessage.classList.remove("hidden");
+            setTimeout(() => {
+              successMessage.classList.add("hidden");
+            }, 3000);
+          } else {
+            alert("❌ Failed to send reset email. Please try again.");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

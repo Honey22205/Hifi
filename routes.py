@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+import secrets
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
 from models import Customer
 from flask_login import login_user, logout_user, current_user, login_required
@@ -63,22 +64,64 @@ def register_routes(app, db, bcrypt, mail):
         # flash('Logged out successfully.', 'success')
         return redirect(url_for('index'))
     
+    
+    @app.route('/reset_password/<token>', methods=['POST', 'GET'])
+    def reset_password(token):
+        if request.method == 'POST':
+            email = request.form['email']
+            password = request.form['newPassword']
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            user = Customer.query.filter_by(email=email).first()
+            if user:
+                user.password = hashed_password
+                db.session.commit()
+                return redirect('/login')
+            else:
+                return render_template('forgetpwd.html', token=token)
+        else:
+            return render_template('forgetpwd.html', token=token)
+
     @app.route('/forget_password', methods=['POST', 'GET'])
     def forget_password():
         if request.method == 'POST':
-            email = request.form['email']
+            email = request.form.get('email')
             user = Customer.query.filter_by(email=email).first()
+
             if user:
-                msg = Message( 
-                'Reset Password', 
-                sender = app.config.get('MAIL_USERNAME'), 
-                recipients = [email] 
-               ) 
-                msg.body = 'Hello Flask message sent from Flask-Mail'
-                mail.send(msg) 
-                return 'Sent'
-            else:
-                # flash('Email not found', 'error')
-                return redirect(url_for('forget_password', message='Email not found'))
-        
-        return render_template('forget_password.html')
+                try:
+                    reset_token = secrets.token_urlsafe(16)  
+                    print(reset_token)
+                    reset_link = url_for('reset_password', token=reset_token, _external=True)
+                    print(reset_link)
+
+                    msg = Message(
+                        'Password Reset Request',
+                        sender=app.config['MAIL_USERNAME'],
+                        recipients=[email]
+                    )
+                    print(msg)
+                    msg.body = f"""
+                        Hello {user.username},
+
+                        You requested to reset your password. Click the link below:
+
+                        🔗 {reset_link}
+
+                        If you did not request this, please ignore this email.
+
+                        Thanks,  
+                        HIFI Delivery Eats Team
+                    """
+
+                    mail.send(msg)
+                    print('Mail sent successfully')
+
+                    return jsonify({'success': True, 'message': 'Reset link sent successfully'})
+
+                except Exception as e:
+                    print(e)
+                    return jsonify({'success': False, 'error': f'Error sending email: {str(e)}'})
+
+            return jsonify({'success': False, 'error': 'Email not found'})
+
+        return render_template('forgetemail.html')

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forgot Password | HIFI Delivery Eats</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background-image: url("/img/login.png") no-repeat center center/cover;
+        background-color: #f4f8f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .reset-password-container {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 100%;
+        max-width: 380px;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      h2 {
+        color: #2e7d32;
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 15px;
+      }
+
+      /* Input Fields */
+      .input-group {
+        display: flex;
+        align-items: center;
+        background: #f0fff0;
+        border: 2px solid #a5d6a7;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+      }
+
+      .emoji {
+        font-size: 20px;
+        margin-right: 8px;
+      }
+
+      input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 16px;
+        background: transparent;
+      }
+
+      /* Button */
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #2e7d32;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #1b5e20;
+      }
+
+      /* Back to Login */
+      .back-to-login {
+        margin-top: 15px;
+        font-size: 14px;
+      }
+
+      .back-to-login a {
+        text-decoration: none;
+        color: #2e7d32;
+        font-weight: bold;
+      }
+
+      .back-to-login a:hover {
+        text-decoration: underline;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reset-password-container">
+      <h2>🔐 Forgot Your Password?</h2>
+      <p>Enter your details below to reset your password.</p>
+      
+
+      <form id="resetPasswordForm" action="{{ url_for('reset_password', token=token) }}"
+      method="POST">
+        <div class="input-group">
+          <span class="emoji">🙍‍♂️</span>
+          <input
+            type="text"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <span class="emoji">🔑</span>
+          <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            placeholder="Enter new password"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <span class="emoji">🔒</span>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            placeholder="Confirm new password"
+            required
+          />
+        </div>
+
+        <button type="submit">Reset Password ✅</button>
+      </form>
+
+      <p class="back-to-login">⬅ <a href="index.html">Back to Login</a></p>
+    </div>
+
+    <script>
+      document
+        .getElementById("resetPasswordForm")
+        .addEventListener("submit", function (event) {
+          let newPassword = document.getElementById("newPassword").value;
+          let confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+          if (newPassword.length < 6) {
+            alert("Password must be at least 6 characters long.");
+            event.preventDefault(); // Prevent submission if invalid
+          } else if (newPassword !== confirmPassword) {
+            alert("Passwords do not match. Please try again.");
+            event.preventDefault(); // Prevent submission if invalid
+          }
+        });
+    </script>
+  </body>
+</html>

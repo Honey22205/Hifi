@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_mail import Message
 from models import Customer
 from flask_login import login_user, logout_user, current_user, login_required
 
-def register_routes(app, db, bcrypt):
+def register_routes(app, db, bcrypt, mail):
     @app.route('/')
     def index():
         if current_user.is_authenticated:
@@ -61,3 +62,23 @@ def register_routes(app, db, bcrypt):
         session.pop('user_id', None)  # Remove user session
         # flash('Logged out successfully.', 'success')
         return redirect(url_for('index'))
+    
+    @app.route('/forget_password', methods=['POST', 'GET'])
+    def forget_password():
+        if request.method == 'POST':
+            email = request.form['email']
+            user = Customer.query.filter_by(email=email).first()
+            if user:
+                msg = Message( 
+                'Reset Password', 
+                sender = app.config.get('MAIL_USERNAME'), 
+                recipients = [email] 
+               ) 
+                msg.body = 'Hello Flask message sent from Flask-Mail'
+                mail.send(msg) 
+                return 'Sent'
+            else:
+                # flash('Email not found', 'error')
+                return redirect(url_for('forget_password', message='Email not found'))
+        
+        return render_template('forget_password.html')

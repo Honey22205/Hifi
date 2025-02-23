@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from flask_mail import Mail
 import os
 
 load_dotenv()
@@ -35,9 +36,18 @@ def create_app():
     def unauthorized_callback(): # to handle the unauthorized access
         return redirect('/login')
     
+    # mail
+    mail = Mail(app)
+    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+    app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+    app.config['MAIL_USE_TLS'] = False
+    app.config['MAIL_USE_SSL'] = True
+    
     # routes 
     from routes import register_routes
-    register_routes(app, db, bcrypt)
+    register_routes(app, db, bcrypt, mail)
     
     migrate = Migrate(app, db)
     return app

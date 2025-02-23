@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}HIFI Delivery Eats{% endblock title %}</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    {% block css %}
+      <link rel="stylesheet" href="/css/style.css" />
+    {% endblock css %}
     <link
       href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css"
       rel="stylesheet"
@@ -15,6 +17,18 @@
     <a href="#" class="scrolltop" id="scroll-top">
       <i class="bx bx-chevron-up scrolltop__icon"></i>
     </a>
+
+    <!-- Flash Messages -->
+    <!-- Find the perfect place for this flash message and also fix the UI -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <p class="flash-message">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <!--========== HEADER ==========-->
     <header class="l-header" id="header">
@@ -55,10 +69,10 @@
             <!-- Authentication Logic -->
             {% if user %}
             <li class="nav__item">
-              <a href="/profile" class="nav__link">{{ user.username }}</a>
+              <a href="/profile" class="nav__link"> {{ user.username }}</a>
             </li>
             <li class="nav__item">
-              <a href="/logout" class="nav__link">Logout</a>
+              <a href="{{ url_for('logout') }}" class="nav__link">Logout</a>
             </li>
             {% else %}
             <li class="nav__item">
@@ -77,6 +91,7 @@
         </div>
       </nav>
     </header>
+
     <main class="l-main">{% block content %}{% endblock content %}</main>
   </body>
 </html>

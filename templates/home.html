@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% block title %}Home Page{% endblock title %} {%
+block content %}
+
+<!--========== HOME ==========-->
+<section class="home" id="home">
+  <div class="home__container bd-container bd-grid">
+    <div class="home__data">
+      <h1 class="home__title">Hifi Delivery Eats</h1>
+      <h2 class="home__subtitle">
+        Experience the best food delivery service with Hifi Delivery Eats!
+      </h2>
+      <a href="menu.html" class="button">View Menu</a>
+      <div class="delivered-meals">
+        <p class="delivered-text" id="dynamic-text">
+          <span>1,000+</span> meals delivered last week!
+        </p>
+      </div>
+    </div>
+    <img src="/img/home_page.jpg" alt="" class="home__img" />
+  </div>
+</section>
+{% endblock content %}

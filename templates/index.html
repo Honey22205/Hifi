@@ -13,7 +13,7 @@
         }
 
         body {
-            background: url("/static/img/login\ \(2\).png") no-repeat center center/cover; 
+            background: url("/img/login.png") no-repeat center center/cover; 
             background-color: #f0fff0;
             display: flex;
             justify-content: center;
@@ -105,15 +105,15 @@
 </head>
 <body>
 
-    <div class="container">
+    <form action='/login' method='POST' class="container">
         <h2>HIFI Delivery Eats</h2>
 
         <div class="input-group">
-            <input type="text" placeholder="Enter your email">
+            <input type="text" name="email" placeholder="Enter your email">
         </div>
 
         <div class="input-group">
-            <input type="password" id="password" placeholder="Enter your password">
+            <input type="password" id="password" name="password" placeholder="Enter your password">
             <i onclick="togglePassword()">👁</i>
         </div>
 
@@ -123,8 +123,8 @@
             <img src="https://img.icons8.com/color/24/000000/google-logo.png"/> Sign up with Google
         </button>
 
-        <p class="signup-link">Don't have an account? <a href="#">Sign up</a></p>
-    </div>
+        <p class="signup-link">Don't have an account? <a href="{{url_for('signup')}}">Sign up</a></p>
+    </form>
 
     <script>
         function togglePassword() {

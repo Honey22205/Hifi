@@ -37,7 +37,7 @@ def create_app():
     
     # routes 
     from routes import register_routes
-    register_routes(app, db, Bcrypt)
+    register_routes(app, db, bcrypt)
     
     migrate = Migrate(app, db)
     return app

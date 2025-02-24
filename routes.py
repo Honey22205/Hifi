@@ -9,7 +9,7 @@ def register_routes(app, db, bcrypt, mail):
     def index():
         if current_user.is_authenticated:
             return render_template('home.html', user=current_user)  # Pass user data to frontend
-        return render_template('index.html')  # Login page
+        return render_template('login.html')  # Login page
     
     @app.route('/signup', methods=['POST', 'GET'])
     def signup():
@@ -54,7 +54,7 @@ def register_routes(app, db, bcrypt, mail):
                 # flash('Invalid phone or password', 'error')
                 return redirect(url_for('login', message='Invalid phone or password'))
 
-        return render_template('index.html')
+        return render_template('login.html')
 
     @app.route('/logout')
     @login_required

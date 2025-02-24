@@ -41,9 +41,9 @@ def register_routes(app, db, bcrypt, mail):
     @app.route('/login', methods=['POST', 'GET'])
     def login():
         if request.method == 'POST':
-            email = request.form['email']
+            phone = request.form['phone']
             password = request.form['password']
-            user = Customer.query.filter_by(email=email).first()
+            user = Customer.query.filter_by(phone=phone).first()
 
             if user and bcrypt.check_password_hash(user.password, password):
                 login_user(user)
@@ -51,8 +51,8 @@ def register_routes(app, db, bcrypt, mail):
                 # flash('Login successful!', 'success')
                 return redirect(url_for('index'))
             else:
-                # flash('Invalid email or password', 'error')
-                return redirect(url_for('login', message='Invalid email or password'))
+                # flash('Invalid phone or password', 'error')
+                return redirect(url_for('login', message='Invalid phone or password'))
 
         return render_template('index.html')
 

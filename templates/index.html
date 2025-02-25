@@ -101,6 +101,10 @@
             text-decoration: none;
             font-weight: bold;
         }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -119,11 +123,13 @@
 
         <button>Login</button>
 
+        <!--
         <button class="google-btn">
             <img src="https://img.icons8.com/color/24/000000/google-logo.png"/> Sign up with Google
         </button>
+        -->
         
-        <p><a href="{{url_for('forget_password')}}">Forget password</a></p>
+        <p class="signup-link"><a href="{{url_for('forget_password')}}">Forget password</a></p>
         <p class="signup-link">Don't have an account? <a href="{{url_for('signup')}}">Sign up</a></p>
     </form>
 

@@ -8,7 +8,7 @@ class Customer(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
-    phone = db.Column(db.Integer, nullable=False) 
+    phone = db.Column(db.Integer, unique=True, nullable=False) 
     password = db.Column(db.String(100), nullable=False)
     address = db.Column(db.String(100), nullable=False)
     
@@ -25,7 +25,7 @@ class Admin(UserMixin, db.Model):
     username = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.Integer, nullable=False)
+    phone = db.Column(db.Integer, unique=True, nullable=False) 
 
 
     def __repr__(self):
@@ -40,7 +40,7 @@ class DeleveryAgent(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
-    phone = db.Column(db.Integer, nullable=False)
+    phone = db.Column(db.Integer, unique=True, nullable=False) 
     password = db.Column(db.String(100), nullable=False)
     delevery_area = db.Column(db.String(100), nullable=False)
     # available_slots = db.Column(db.Boolean, nullable=False)

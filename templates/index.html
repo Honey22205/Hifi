@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}HIFI Delivery Eats{% endblock title %}</title>
-    
 
     <!-- Link Css file -->
     {% block css %}
@@ -20,18 +19,6 @@
     <a href="#" class="scrolltop" id="scroll-top">
       <i class="bx bx-chevron-up scrolltop__icon"></i>
     </a>
-
-    <!-- Flash Messages -->
-    <!-- Find the perfect place for this flash message and also fix the UI -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for message in messages %}
-                    <p class="flash-message">{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
 
     <!--========== HEADER ==========-->
     <header class="l-header" id="header">
@@ -62,9 +49,11 @@
             <li class="nav__item">
               <a href="#cart" class="nav__link">Cart</a>
             </li>
+            <!--
             <li class="nav__item">
               <a href="#about" class="nav__link">About</a>
             </li>
+            -->
             <li class="nav__item">
               <a href="#contact" class="nav__link">Contact us</a>
             </li>
@@ -72,7 +61,7 @@
             <!-- Authentication Logic -->
             {% if user %}
             <li class="nav__item">
-              <a href="/profile" class="nav__link"> {{ user.username }}</a>
+              <a href="/profile" class="nav__link">{{ user.username.split()[0] | upper }}</a>
             </li>
             <li class="nav__item">
               <a href="{{ url_for('logout') }}" class="nav__link">Logout</a>
@@ -83,7 +72,7 @@
             </li>
             {% endif %}
 
-            <li>
+            <li class="nav__item">
               <i class="bx bx-moon change-theme" id="theme-button"></i>
             </li>
           </ul>
@@ -95,6 +84,43 @@
       </nav>
     </header>
 
-    <main class="l-main">{% block content %}{% endblock content %}</main>
+    <!-- Flash Messages (positioned right below the header) -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages" id="flash-messages">
+          {% for message in messages %}
+            <p class="flash-message">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <main class="l-main">
+      {% block content %}{% endblock content %}
+    </main>
+
+    {% block scripts %}
+      <script>
+        // Auto-hide flash messages after 3 seconds
+        setTimeout(function() {
+          const flashMessages = document.getElementById('flash-messages');
+          if (flashMessages) {
+            flashMessages.style.opacity = '0';
+            // Optionally remove from DOM after fade-out
+            setTimeout(() => flashMessages.remove(), 500);
+          }
+        }, 3000);
+
+        // Toggle nav menu for mobile devices
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        if (navToggle && navMenu) {
+          navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+          });
+        }
+      </script>
+    {% endblock scripts %}
   </body>
 </html>

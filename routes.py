@@ -25,7 +25,7 @@ def register_routes(app, db, bcrypt, mail):
 
             # Check if user already exists
             if Customer.query.filter_by(email=email).first():
-                # flash('Email already registered. Please log in.', 'error')
+                flash('Email already registered. Please log in.', 'error')
                 return redirect(url_for('index', message='Email already registered, please log in.'))
 
             # Create new user
@@ -33,7 +33,7 @@ def register_routes(app, db, bcrypt, mail):
             db.session.add(new_user)
             db.session.commit()
 
-            # flash('Signup successful! Please log in.', 'success')
+            flash('Signup successful! Please log in.', 'success')
             return redirect(url_for('index', message='Signup successful! Please log in.'))
         
         return render_template('signup.html')
@@ -41,27 +41,30 @@ def register_routes(app, db, bcrypt, mail):
     @app.route('/login', methods=['POST', 'GET'])
     def login():
         if request.method == 'POST':
-            phone = request.form['phone']
+            phone_email = request.form['phone-email']
             password = request.form['password']
-            user = Customer.query.filter_by(phone=phone).first()
+            
+            if '@' in phone_email:
+                user = Customer.query.filter_by(email=phone_email).first()
+            else:
+                user = Customer.query.filter_by(phone=phone_email).first()
 
             if user and bcrypt.check_password_hash(user.password, password):
                 login_user(user)
                 session['user_id'] = user.id  # Store user ID in session
-                # flash('Login successful!', 'success')
                 return redirect(url_for('index'))
             else:
-                # flash('Invalid phone or password', 'error')
                 return redirect(url_for('login', message='Invalid phone or password'))
 
         return render_template('login.html')
+
 
     @app.route('/logout')
     @login_required
     def logout():
         logout_user()
         session.pop('user_id', None)  # Remove user session
-        # flash('Logged out successfully.', 'success')
+        flash('Logged out successfully.', 'success')
         return redirect(url_for('index'))
     
     

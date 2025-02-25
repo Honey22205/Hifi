@@ -96,3 +96,23 @@ button:hover {
     text-decoration: none;
     font-weight: bold;
 }
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+
+/* Flash messages styling */
+.flash-messages {
+    position: fixed;
+    top: 70px; /* Adjust if your header height changes */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    opacity: 0.9;
+    transition: opacity 0.5s ease;
+  }

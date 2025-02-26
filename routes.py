@@ -1,7 +1,8 @@
 import secrets
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
-from models import Customer
+from sqlalchemy import or_
+from models import Customer, Admin, DeliveryAgent
 from flask_login import login_user, logout_user, current_user, login_required
 
 def register_routes(app, db, bcrypt, mail):
@@ -26,7 +27,7 @@ def register_routes(app, db, bcrypt, mail):
             # Check if user already exists
             if Customer.query.filter_by(email=email).first():
                 flash('Email already registered. Please log in.', 'error')
-                return redirect(url_for('index', message='Email already registered, please log in.'))
+                return redirect(url_for('signup', message='Email already registered, please log in.'))
 
             # Create new user
             new_user = Customer(username=username, email=email, phone=phone, password=hashed_password, address=address)
@@ -140,4 +141,93 @@ def register_routes(app, db, bcrypt, mail):
     def contact():
         return render_template('contact.html')
 
+    @app.route('/employee-login', methods=['GET', 'POST'])
+    def employee_login():
+        if request.method == 'POST':
+            username = request.form['phone-email']
+            password = request.form['password']
+            role = request.form['role']  # "admin" or "delivery-agent"
+            print(username, password, role)
 
+            if role == 'admin':
+                # Allow login using phone or email
+                admin = Admin.query.filter(
+                    or_(Admin.phone == username, Admin.email == username)
+                ).first()
+                print(admin)
+                if admin and bcrypt.check_password_hash(admin.password, password):
+                    login_user(admin)
+                    return redirect(url_for('admin'))
+                else:
+                    return render_template('employee_login.html', message='Invalid username or password')
+            
+            elif role == 'delivery-agent':
+                # Allow login using phone or email
+                delivery_agent = DeliveryAgent.query.filter(
+                    or_(DeliveryAgent.phone == username, DeliveryAgent.email == username)
+                ).first()
+                if delivery_agent and bcrypt.check_password_hash(delivery_agent.password, password):
+                    login_user(delivery_agent)
+                    return redirect(url_for('delivery_agent'))
+                else:
+                    return render_template('employee_login.html', message='Invalid username or password')    
+            
+            else:
+                return render_template('employee_login.html', message='Invalid role')
+        
+        else:
+            return render_template('employee_login.html')
+        
+    @app.route('/employee-signup', methods=['POST'])
+    def employee_signup():
+        # Support both JSON payload and form-data
+        data = request.get_json() if request.is_json else request.form
+
+        phone = data.get('phone')
+        email = data.get('email')
+        password = data.get('password')
+        username = data.get('username')
+
+        # Validate required fields
+        if not all([phone, email, password, username]):
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+
+        # Validate and convert phone to int if needed
+        try:
+            phone_int = int(phone)
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid phone number format'}), 400
+
+        # Hash password using bcrypt
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        # Check if an admin with the same email or phone already exists
+        existing_admin = Admin.query.filter(
+            or_(Admin.email == email, Admin.phone == phone_int)
+        ).first()
+        if existing_admin:
+            return jsonify({'success': False, 'error': 'Email or phone number already registered'}), 400
+
+        # Create new admin user
+        new_admin = Admin(
+            username=username,
+            email=email,
+            phone=phone_int,
+            password=hashed_password
+        )
+        
+        try:
+            db.session.add(new_admin)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'success': False, 'error': 'Database error occurred', 'message': str(e)}), 500
+
+        return jsonify({'success': True, 'message': 'Signup successful!'}), 201
+
+
+def admin_routes(app, db):
+    @app.route('/admin')
+    def admin():
+        return render_template('admin/home.html')
+    

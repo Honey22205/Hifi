@@ -1,0 +1,106 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  /* Header & Navigation */
+  header {
+    color: #fff;
+    padding: 15px 20px;
+  }
+  
+  header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  header nav ul li a:hover {
+    color: #66bb6a; /* Lighter green on hover */
+  }
+  
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  /* Welcome Section */
+  .welcome {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  /* Dashboard Statistics */
+  .dashboard-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  .stat-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    flex: 1 1 200px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  /* Dashboard Content */
+  .dashboard-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 15px 20px;
+    background-color: #008000; /* Green footer */
+    color: #fff;
+    margin-top: 30px;
+  }
+  
+  /* Flash Messages */
+  .flash-messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #28a745; /* Green flash messages */
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  .flash-messages p {
+    margin: 0;
+  }
+  
+  .flash-messages.hide {
+      opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }  

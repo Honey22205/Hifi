@@ -7,9 +7,21 @@ from flask_login import LoginManager
 from flask_mail import Mail
 import os
 
+from sqlalchemy import MetaData
+
 load_dotenv()
 
-db = SQLAlchemy()
+metadata = MetaData(
+    naming_convention={
+    "ix": 'ix_%(column_0_label)s',
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
+    }
+)
+
+db=SQLAlchemy(metadata=metadata)
 
 def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static', static_url_path='/')
@@ -47,7 +59,10 @@ def create_app():
     
     # routes 
     from routes import register_routes
+    from routes import admin_routes
+    
     register_routes(app, db, bcrypt, mail)
+    admin_routes(app, db)
     
     migrate = Migrate(app, db)
     return app

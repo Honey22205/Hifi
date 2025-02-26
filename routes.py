@@ -2,7 +2,7 @@ import secrets
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
 from sqlalchemy import or_
-from models import Customer, Admin, DeliveryAgent
+from models import Customer, Admin, DeliveryAgent, Address
 from flask_login import login_user, logout_user, current_user, login_required
 
 def register_routes(app, db, bcrypt, mail):
@@ -15,29 +15,50 @@ def register_routes(app, db, bcrypt, mail):
     @app.route('/signup', methods=['POST', 'GET'])
     def signup():
         if request.method == 'POST':
-            username = request.form['username']
-            email = request.form['email']
-            phone = request.form['phone']
-            password = request.form['password']
-            address = request.form['address']
+            print("DEBUG: Form Data Received ->", request.form)  # 🚀 Print all form data
 
-            # Hash password
+            username = request.form.get('username')
+            email = request.form.get('email')
+            phone = request.form.get('phone')
+            password = request.form.get('password')
+
+            address_line = request.form.get('address_line')
+            city = request.form.get('city')
+            state = request.form.get('state')
+            zip_code = request.form.get('zip_code')
+
+            if not all([username, email, phone, password, address_line, city, state, zip_code]):
+                flash('All fields are required.', 'error')
+                return redirect(url_for('signup'))
+
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-            # Check if user already exists
             if Customer.query.filter_by(email=email).first():
                 flash('Email already registered. Please log in.', 'error')
-                return redirect(url_for('signup', message='Email already registered, please log in.'))
+                return redirect(url_for('signup'))
 
-            # Create new user
-            new_user = Customer(username=username, email=email, phone=phone, password=hashed_password, address=address)
-            db.session.add(new_user)
+            # Create new customer entry
+            new_customer = Customer(username=username, email=email, phone=phone, password=hashed_password)
+            db.session.add(new_customer)
+            db.session.commit()  # Commit first to get `id` for address
+            
+            # Add Address Entry
+            new_address = Address(
+                customer_id=new_customer.id,  # Use the newly created customer's ID
+                address_line=address_line,
+                city=city,
+                state=state,
+                zip_code=zip_code,
+                is_preferred=True
+            )
+            db.session.add(new_address)
             db.session.commit()
 
-            flash('Signup successful! Please log in.', 'success')
-            return redirect(url_for('index', message='Signup successful! Please log in.'))
-        
+            flash('Signup successful!', 'success')
+            return redirect(url_for('index'))
+
         return render_template('signup.html')
+
         
     @app.route('/login', methods=['POST', 'GET'])
     def login():

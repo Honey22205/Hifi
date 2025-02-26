@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: 0;
@@ -56,7 +55,7 @@ h2 {
     margin-right: 8px;
 }
 
-.input-group input, .input-group textarea {
+.input-group input {
     width: 100%;
     padding: 10px;
     border: 2px solid #ddd;
@@ -65,9 +64,14 @@ h2 {
     transition: border 0.3s;
 }
 
-.input-group input:focus, .input-group textarea:focus {
+.input-group input:focus {
     border-color: #1b5e20;
     outline: none;
+}
+
+/* Styling for Address Fields */
+#address_line, #city, #state, #zip_code {
+    text-transform: capitalize;
 }
 
 .signup-btn {
@@ -101,11 +105,10 @@ h2 {
     text-align: left;
 }
 
-
-/* Flash messages styling */
+/* Flash messages */
 .flash-messages {
     position: fixed;
-    top: 70px; /* Adjust if your header height changes */
+    top: 70px;
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(0, 0, 0, 0.8);
@@ -115,4 +118,4 @@ h2 {
     z-index: 1000;
     opacity: 0.9;
     transition: opacity 0.5s ease;
-  }
+}

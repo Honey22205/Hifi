@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,25 +7,14 @@
   <title>Signup - HIFI Delivery Eats</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   
-  <!-- Link Css file -->
+  <!-- Link CSS file -->
   {% block css %}
     <link rel="stylesheet" href="/css/signup.css" />
-    <style>
-      /* Optional inline styling for the eye icon */
-      .password-container {
-        position: relative;
-      }
-      .toggle-password-icon {
-        position: absolute;
-        right: 10px;
-        top: 38px; /* Adjust this value based on your layout */
-        cursor: pointer;
-      }
-    </style>
   {% endblock css %}
 </head>
 <body>
-  <!-- Flash Messages (positioned right below the header) -->
+
+  <!-- Flash Messages -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       <div class="flash-messages" id="flash-messages">
@@ -40,33 +30,47 @@
 
     <form id="signup-form" action='/signup' method="POST">
       <div class="input-group">
-        <label for="username"><span>👤</span>Username</label>
+        <label for="username"><span>👤</span> Username</label>
         <input type="text" id="username" name="username" placeholder="Enter your username" required>
       </div>
 
       <div class="input-group">
-        <label for="email"><span>📧</span>Email</label>
+        <label for="email"><span>📧</span> Email</label>
         <input type="email" name="email" id="email" placeholder="Enter your email" required>
         <p class="error" id="email-error"></p>
       </div>
 
       <div class="input-group">
-        <label for="phone"><span>📞</span>Phone</label>
+        <label for="phone"><span>📞</span> Phone</label>
         <input type="text" name="phone" id="phone" placeholder="Enter your phone number" required>
         <p class="error" id="phone-error"></p>
       </div>
 
       <div class="input-group password-container">
-        <label for="password"><span>🔒</span>Password</label>
+        <label for="password"><span>🔒</span> Password</label>
         <input type="password" name="password" id="password" placeholder="Enter your password" required>
         <p class="error" id="password-error"></p>
-        <!-- Eye icon for toggling password visibility -->
         <i onclick="togglePassword()" class="toggle-password-icon">👁</i>
       </div>
 
       <div class="input-group">
-        <label for="address"><span>🏡</span>Address</label>
-        <textarea id="address" name="address" rows="2" placeholder="Enter your address" required></textarea>
+        <label for="address_line"><span>🏡</span> Address Line</label>
+        <input type="text" id="address_line" name="address_line" placeholder="Enter your street address" required>
+      </div>
+
+      <div class="input-group">
+        <label for="city"><span>🌆</span> City</label>
+        <input type="text" id="city" name="city" placeholder="Enter your city" required>
+      </div>
+
+      <div class="input-group">
+        <label for="state"><span>🌍</span> State</label>
+        <input type="text" id="state" name="state" placeholder="Enter your state" required>
+      </div>
+
+      <div class="input-group">
+        <label for="zip_code"><span>📮</span> Zip Code</label>
+        <input type="text" id="zip_code" name="zip_code" placeholder="Enter your zip code" required>
       </div>
 
       <button type="submit" class="signup-btn">Sign Up <span>🚀</span></button>
@@ -77,69 +81,9 @@
   </div>
 
   <script>
-    // Form Validation
-    document.getElementById("signup-form").addEventListener("submit", function(event) {
-      event.preventDefault(); // Prevent form submission
-
-      let email = document.getElementById("email").value;
-      let phone = document.getElementById("phone").value;
-      let password = document.getElementById("password").value;
-      let emailError = document.getElementById("email-error");
-      let phoneError = document.getElementById("phone-error");
-      let passwordError = document.getElementById("password-error");
-
-      emailError.innerText = "";
-      phoneError.innerText = "";
-      passwordError.innerText = "";
-
-      // Validate email format
-      let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-          emailError.innerText = "Invalid email format";
-          return;
-      }
-
-      // Validate phone number: must be 10 digits and numeric
-      if (phone.length !== 10 || isNaN(phone)) {
-          phoneError.innerText = "Phone number must be 10 digits";
-          return;
-      }
-
-      // Basic password length validation
-      if (password.length < 6) {
-          passwordError.innerText = "Password must be at least 6 characters";
-          return;
-      }
-      
-      // Additional password validations:
-      // Check for at least one uppercase letter
-      if (!/[A-Z]/.test(password)) {
-          passwordError.innerText = "Password must contain at least one uppercase letter";
-          return;
-      }
-      // Check for at least one number
-      if (!/[0-9]/.test(password)) {
-          passwordError.innerText = "Password must contain at least one number";
-          return;
-      }
-      // Check for at least one special character
-      if (!/[^A-Za-z0-9]/.test(password)) {
-          passwordError.innerText = "Password must contain at least one special character";
-          return;
-      }
-
-      // Submit the form if all validations pass
-      this.submit();
-    });
-
-    // Toggle Password Visibility using the eye icon
     function togglePassword() {
       const passwordField = document.getElementById("password");
-      if (passwordField.type === "password") {
-        passwordField.type = "text";
-      } else {
-        passwordField.type = "password";
-      }
+      passwordField.type = passwordField.type === "password" ? "text" : "password";
     }
   </script>
 </body>

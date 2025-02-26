@@ -128,3 +128,16 @@ def register_routes(app, db, bcrypt, mail):
             return jsonify({'success': False, 'error': 'Email not found'})
 
         return render_template('forgetemail.html')
+
+
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
+    
+
+
+    @app.route('/contact')
+    def contact():
+        return render_template('contact.html')
+
+

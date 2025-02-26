@@ -1,0 +1,28 @@
+{% extends 'admin/index.html' %}
+
+{% block css %}
+  {{ super() }}
+  <!-- Link to the home-specific CSS file -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/home.css') }}">
+{% endblock css %}
+
+{% block content %}
+  <section class="home-content">
+    <h1>Admin Home</h1>
+    <p>Welcome to your dashboard! Here you can monitor key metrics and manage the platform.</p>
+    <div class="stats">
+      <div class="stat-card">
+        <h2>Total Sales</h2>
+        <p>{{ total_sales }}</p>
+      </div>
+      <div class="stat-card">
+        <h2>New Users</h2>
+        <p>{{ new_users }}</p>
+      </div>
+      <div class="stat-card">
+        <h2>Active Sessions</h2>
+        <p>{{ active_sessions }}</p>
+      </div>
+    </div>
+  </section>
+{% endblock content %}

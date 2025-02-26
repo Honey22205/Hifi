@@ -1,0 +1,68 @@
+/* home.css - Green colour grading for the admin home page */
+
+/* Home Page Container */
+.home-content {
+    background-color: #e8f5e9; /* Light green background */
+    padding: 40px 20px;
+    color: #2e7d32; /* Dark green text */
+  }
+  
+  /* Home Page Title */
+  .home-content h1 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #1b5e20; /* Deeper green for the title */
+  }
+  
+  /* Home Page Intro Paragraph */
+  .home-content p {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+  
+  /* Dashboard Stats Container */
+  .stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  /* Individual Stat Cards */
+  .stat-card {
+    background-color: #a5d6a7;  /* Medium green tone */
+    border-radius: 8px;
+    padding: 20px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Stat Card Headings */
+  .stat-card h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #1b5e20;
+  }
+  
+  /* Stat Card Values */
+  .stat-card p {
+    font-size: 20px;
+    color: #1b5e20;
+  }
+  
+  /* Responsive Adjustments */
+  @media screen and (max-width: 768px) {
+    .home-content h1 {
+      font-size: 28px;
+    }
+    .home-content p {
+      font-size: 16px;
+    }
+    .stat-card {
+      width: 100%;
+    }
+  }
+  

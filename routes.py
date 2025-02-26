@@ -26,7 +26,7 @@ def register_routes(app, db, bcrypt, mail):
             # Check if user already exists
             if Customer.query.filter_by(email=email).first():
                 flash('Email already registered. Please log in.', 'error')
-                return redirect(url_for('index', message='Email already registered, please log in.'))
+                return redirect(url_for('signup', message='Email already registered, please log in.'))
 
             # Create new user
             new_user = Customer(username=username, email=email, phone=phone, password=hashed_password, address=address)

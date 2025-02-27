@@ -257,54 +257,60 @@ def register_routes(app, db, bcrypt, mail):
         flash('Logged out successfully.', 'success')
         return redirect(url_for('employee_login'))
     
-    @app.route('/delivery_signup', methods=['POST'])
+    
+    @app.route('/delivery_signup', methods=['POST', 'GET'])
     def delivery_signup():
-        # Support both JSON payload and form-data
-        data = request.get_json() if request.is_json else request.form
-        
-        phone = data.get('phone')
-        email = data.get('email')
-        username = data.get('username')
-        password = data.get('password')
-        delivery_area = data.get('delivery_area')
-        
-        # Validate required fields
-        if not all([phone, email, username, password, delivery_area]):
-            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
-        
-        # Validate and convert phone to int if needed
-        try:
-            phone_int = int(phone)
-        except ValueError:
-            return jsonify({'success': False, 'error': 'Invalid phone number format'}), 400
-        
-        # Hash password using bcrypt
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        
-        # Check if a delivery agent with the same email or phone already exists
-        existing_delivery_agent = DeliveryAgent.query.filter(
-            or_(DeliveryAgent.email == email, DeliveryAgent.phone == phone_int)
-        ).first()
-        if existing_delivery_agent:
-            return jsonify({'success': False, 'error': 'Email or phone number already registered'}), 400
-        
-        # Create new delivery agent user
-        new_delivery_agent = DeliveryAgent(
-            username=username,
-            email=email,
-            phone=phone_int,
-            password=hashed_password,
-            delivery_area=delivery_area
-        )
-        
-        try:
-            db.session.add(new_delivery_agent)
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'success': False, 'error': 'Database error occurred', 'message': str(e)}), 500
-        
-        return jsonify({'success': True, 'message': 'Signup successful!'}), 201
+        if request.method == 'POST':
+            phone = request.form['phone']
+            email = request.form['email']
+            password = request.form['password']
+            username = request.form['username']
+            delivery_area = request.form['delivery_area']
+            
+            # Validate required fields
+            if not all([phone, email, password, username, delivery_area]):
+                flash('Please enter all required fields')
+                return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+            
+            # Validate and convert phone to int if needed
+            try:
+                phone_int = int(phone)
+            except ValueError:
+                flash('Invalid phone number format')
+                return jsonify({'success': False, 'error': 'Invalid phone number format'}), 400
+            
+            # Hash password using bcrypt
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            
+            # Check if a delivery agent with the same email or phone already exists
+            existing_delivery_agent = DeliveryAgent.query.filter(
+                or_(DeliveryAgent.email == email, DeliveryAgent.phone == phone_int)
+            ).first()
+            if existing_delivery_agent:
+                flash('Email or phone number already registered')
+                return jsonify({'success': False, 'error': 'Email or phone number already registered'}), 400
+            
+            # Create new delivery agent user
+            new_delivery_agent = DeliveryAgent(
+                username=username,
+                email=email,
+                phone=phone_int,
+                password=hashed_password,
+                delivery_area=delivery_area
+            )
+            
+            try:
+                db.session.add(new_delivery_agent)
+                db.session.commit()
+                flash('Signup successful!')
+                return jsonify({'success': True, 'message': 'Signup successful! You can now log in.'}), 201
+            except Exception as e:
+                db.session.rollback()
+                flash('Database error occurred')
+                return jsonify({'success': False, 'error': 'Database error occurred', 'message': str(e)}), 500
+        else:
+            return render_template('delivery_agent_signup.html')
+            
 
 
 

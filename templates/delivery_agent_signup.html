@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delivery Agent SignUp</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("/img/bg3.png"); 
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
+      .login-box {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        width: 350px;
+        text-align: center;
+      }
+      h2 {
+        color: #006400;
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+      p {
+        color: gray;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+      label {
+        text-align: left;
+        font-size: 14px;
+        font-weight: bold;
+        margin: 10px 0 5px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        background: #006400;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background: #004d00;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="login-box">
+        <h2>Delivery Agent SignUp</h2>
+        <p>Join our food delivery team</p>
+        <form action="/signup" method="post">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Username" required />
+
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="Email Address" required />
+
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="Phone Number" required />
+
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Password" required />
+
+          <label for="delivery_area">Delivery Area</label>
+          <input type="text" id="delivery_area" name="delivery_area" placeholder="Delivery Area" required />
+
+          <label for="id_proof">Aadhar Card Number</label>
+          <input type="text" id="id_proof" name="id_proof" placeholder="Aadhar Card Number" required />
+
+          <button type="submit">Sign up</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

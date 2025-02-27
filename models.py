@@ -69,8 +69,8 @@ class DeliveryAgent(UserMixin, db.Model):
     password = db.Column(db.String(100), nullable=False)
     delivery_area = db.Column(db.String(100), nullable=False)  
     available_slots = db.Column(db.Boolean, nullable=False, default=True)
-    id_proof = db.Column(db.String(12), nullable=False)  # If storing a 12-digit ID as a string
-    is_approved = db.Column(db.Boolean, nullable=False, default=False)
+    id_proof = db.Column(db.String(12), nullable=False, server_default='')
+    is_approved = db.Column(db.Boolean, nullable=False, server_default='0')
 
 
     

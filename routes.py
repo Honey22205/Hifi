@@ -303,7 +303,7 @@ def register_routes(app, db, bcrypt, mail):
                 db.session.add(new_delivery_agent)
                 db.session.commit()
                 flash('Signup successful!')
-                return jsonify({'success': True, 'message': 'Signup successful! You can now log in.'}), 201
+                return redirect(url_for('delivery_signup'))
             except Exception as e:
                 db.session.rollback()
                 flash('Database error occurred')

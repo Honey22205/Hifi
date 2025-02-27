@@ -122,3 +122,23 @@ h2 {
     opacity: 0.9;
     transition: opacity 0.5s ease;
 }
+
+.password-input-wrapper {
+    position: relative;
+  }
+  
+  /* Add right padding so text doesn't collide with icon */
+  .password-input-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* Adjust if necessary */
+  }
+
+  /* Position the eye icon */
+  .toggle-password-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.2em; /* Optional: adjust icon size */
+  }

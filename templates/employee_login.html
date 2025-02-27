@@ -5,13 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HIFI Delivery Eats - Login</title>
 
-  <!-- Link Css file -->
-  <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">  -->
-
-  <!--  OR  -->
+  <!-- Link CSS file -->
   {% block css %}
     <link rel="stylesheet" href="/css/employe_login.css" />
   {% endblock css %}
+  
+  <!-- Additional inline CSS for UI fixes -->
+  <style>
+    /* Fix for the password input group */
+    .password-input-wrapper {
+      position: relative;
+    }
+    .password-input-wrapper input {
+      width: 100%;
+      padding-right: 40px; /* Space for the eye icon */
+    }
+    .toggle-password-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2em;
+    }
+    /* Horizontal separator style */
+    hr.separator {
+      margin: 20px 0;
+      border: none;
+      border-top: 1px solid #ccc;
+    }
+  </style>
   
 </head>
 <body>
@@ -26,7 +49,7 @@
     {% endif %}
   {% endwith %}
 
-  <form action={{url_for('employee_login')}} method='POST' class="container">
+  <form action="{{ url_for('employee_login') }}" method="POST" class="container">
     <h2>HIFI Delivery Eats</h2>
     <h3>Employee Login</h3>
 
@@ -35,8 +58,10 @@
     </div>
 
     <div class="input-group">
-      <input type="password" id="password" name="password" placeholder="Enter your password">
-      <i onclick="togglePassword()">👁</i>
+      <div class="password-input-wrapper">
+        <input type="password" id="password" name="password" placeholder="Enter your password">
+        <i onclick="togglePassword()" class="toggle-password-icon">👁</i>
+      </div>
     </div>
 
     <!-- Dropdown for Role Selection -->
@@ -49,22 +74,21 @@
 
     <button>Login</button>
 
-    <!--
-    <button class="google-btn">
-      <img src="https://img.icons8.com/color/24/000000/google-logo.png"/> Sign up with Google
-    </button>
-    -->
-    <p class="signup-link"><a href="{{url_for('forget_password')}}">Forget password</a></p>
+    <p class="signup-link">
+      <a href="{{ url_for('forget_password') }}">Forget password</a>
+    </p>
+
+    <!-- Added horizontal separator line above the delivery signup link -->
+    <hr class="separator">
+    <p class="signup-link">
+      <a href="{{ url_for('delivery_signup') }}">Sign up here as Delivery partner</a>
+    </p>
   </form>
 
   <script>
     function togglePassword() {
-      let pass = document.getElementById("password");
-      if (pass.type === "password") {
-          pass.type = "text";
-      } else {
-          pass.type = "password";
-      }
+      const pass = document.getElementById("password");
+      pass.type = pass.type === "password" ? "text" : "password";
     }
     
     setTimeout(function() {
@@ -79,7 +103,6 @@
     // Toggle nav menu for mobile devices
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
-
     if (navToggle && navMenu) {
       navToggle.addEventListener('click', () => {
         navMenu.classList.toggle('show-menu');

@@ -157,8 +157,11 @@ def register_routes(app, db, bcrypt, mail):
                 print(admin)
                 if admin and bcrypt.check_password_hash(admin.password, password):
                     login_user(admin)
+                    print("Login successful")
+                    session['user_id'] = admin.id  # Store user ID in session
                     return redirect(url_for('admin'))
                 else:
+                    flash('Invalid username or password')
                     return render_template('employee_login.html', message='Invalid username or password')
             
             elif role == 'delivery-agent':
@@ -224,10 +227,76 @@ def register_routes(app, db, bcrypt, mail):
             return jsonify({'success': False, 'error': 'Database error occurred', 'message': str(e)}), 500
 
         return jsonify({'success': True, 'message': 'Signup successful!'}), 201
+    
+    @app.route('/employee-logout')
+    @login_required
+    def employee_logout():
+        logout_user()
+        session.pop('user_id', None)
+        flash('Logged out successfully.', 'success')
+        return redirect(url_for('employee_login'))
+    
+    @app.route('/delivery_signup', methods=['POST'])
+    def delivery_signup():
+        # Support both JSON payload and form-data
+        data = request.get_json() if request.is_json else request.form
+        
+        phone = data.get('phone')
+        email = data.get('email')
+        username = data.get('username')
+        password = data.get('password')
+        delivery_area = data.get('delivery_area')
+        
+        # Validate required fields
+        if not all([phone, email, username, password, delivery_area]):
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+        
+        # Validate and convert phone to int if needed
+        try:
+            phone_int = int(phone)
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid phone number format'}), 400
+        
+        # Hash password using bcrypt
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        
+        # Check if a delivery agent with the same email or phone already exists
+        existing_delivery_agent = DeliveryAgent.query.filter(
+            or_(DeliveryAgent.email == email, DeliveryAgent.phone == phone_int)
+        ).first()
+        if existing_delivery_agent:
+            return jsonify({'success': False, 'error': 'Email or phone number already registered'}), 400
+        
+        # Create new delivery agent user
+        new_delivery_agent = DeliveryAgent(
+            username=username,
+            email=email,
+            phone=phone_int,
+            password=hashed_password,
+            delivery_area=delivery_area
+        )
+        
+        try:
+            db.session.add(new_delivery_agent)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'success': False, 'error': 'Database error occurred', 'message': str(e)}), 500
+        
+        return jsonify({'success': True, 'message': 'Signup successful!'}), 201
 
 
+
+# Admin routes
 def admin_routes(app, db):
     @app.route('/admin')
     def admin():
-        return render_template('admin/home.html')
+        return render_template('admin/admin.html')
     
+
+
+# Delivery agent routes
+def delivery_agent_routes(app, db):
+    @app.route('/delivery-agent')
+    def delivery_agent():
+        return render_template('delivery_agent/delivery_agent.html')  

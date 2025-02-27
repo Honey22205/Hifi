@@ -8,7 +8,7 @@
 }
 
 body {
-    background: url("/img/bg3.jpg") no-repeat center center/cover; 
+    background: url("/img/bg3.png") no-repeat center center/cover; 
     background-color: #f0fff0;
     display: flex;
     justify-content: center;

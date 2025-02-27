@@ -58,11 +58,11 @@ def create_app():
     mail = Mail(app)
     
     # routes 
-    from routes import register_routes
-    from routes import admin_routes
+    from routes import register_routes, admin_routes, delivery_agent_routes
     
     register_routes(app, db, bcrypt, mail)
     admin_routes(app, db)
+    delivery_agent_routes(app, db)
     
     migrate = Migrate(app, db)
     return app

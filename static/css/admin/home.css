@@ -1,68 +1,131 @@
-/* home.css - Green colour grading for the admin home page */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-/* Home Page Container */
-.home-content {
-    background-color: #e8f5e9; /* Light green background */
-    padding: 40px 20px;
-    color: #2e7d32; /* Dark green text */
-  }
-  
-  /* Home Page Title */
-  .home-content h1 {
-    text-align: center;
-    font-size: 36px;
-    margin-bottom: 20px;
-    color: #1b5e20; /* Deeper green for the title */
-  }
-  
-  /* Home Page Intro Paragraph */
-  .home-content p {
-    text-align: center;
-    font-size: 18px;
-    margin-bottom: 30px;
-  }
-  
-  /* Dashboard Stats Container */
-  .stats {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  
-  /* Individual Stat Cards */
-  .stat-card {
-    background-color: #a5d6a7;  /* Medium green tone */
-    border-radius: 8px;
-    padding: 20px;
-    width: 250px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Stat Card Headings */
-  .stat-card h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #1b5e20;
-  }
-  
-  /* Stat Card Values */
-  .stat-card p {
-    font-size: 20px;
-    color: #1b5e20;
-  }
-  
-  /* Responsive Adjustments */
-  @media screen and (max-width: 768px) {
-    .home-content h1 {
-      font-size: 28px;
-    }
-    .home-content p {
-      font-size: 16px;
-    }
-    .stat-card {
-      width: 100%;
-    }
-  }
-  
+:root {
+  --primary-green: #50b341;
+  --light-green: #DCEDC8;
+  --white: #ffffff;
+  --text-dark: #333333;
+}
+
+body {
+  background-color: var(--white);
+  color: var(--text-dark);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--white);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+.nav-menu {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-menu a {
+  text-decoration: none;
+  color: var(--text-dark);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-menu a:hover, .nav-menu a.active {
+  background-color: var(--light-green);
+}
+
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.welcome-section h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background-color: var(--light-green);
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+  color: var(--primary-green);
+}
+
+.admin-section {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+  margin-top: 2rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+}
+
+.data-table th, .data-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: var(--light-green);
+  color: var(--text-dark);
+}
+
+.data-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.data-table tr:hover {
+  background-color: #ddd;
+}

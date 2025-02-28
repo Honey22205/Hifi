@@ -4,25 +4,64 @@
   {{ super() }}
   <!-- Link to the home-specific CSS file -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/home.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock css %}
 
 {% block content %}
-  <section class="home-content">
-    <h1>Admin Home</h1>
-    <p>Welcome to your dashboard! Here you can monitor key metrics and manage the platform.</p>
-    <div class="stats">
-      <div class="stat-card">
-        <h2>Total Sales</h2>
-        <p>{{ total_sales }}</p>
-      </div>
-      <div class="stat-card">
-        <h2>New Users</h2>
-        <p>{{ new_users }}</p>
-      </div>
-      <div class="stat-card">
-        <h2>Active Sessions</h2>
-        <p>{{ active_sessions }}</p>
-      </div>
-    </div>
+
+<div class="container">
+  <section class="welcome-section">
+      <h1>Welcome to HIFI Delivery Eats Admin Dashboard!</h1>
+      <p>Here's a quick overview of your platform's performance.</p>
   </section>
+
+  <div class="metrics-grid">
+      <div class="metric-card">
+          <h3>Total Orders</h3>
+          <div class="metric-value" id="totalOrders">0</div>
+      </div>
+      <div class="metric-card">
+          <h3>Total Users</h3>
+          <div class="metric-value" id="totalUsers">0</div>
+      </div>
+      <div class="metric-card">
+          <h3>Total Sales</h3>
+          <div class="metric-value" id="totalSales">$0</div>
+      </div>
+      <div class="metric-card">
+          <h3>New Users</h3>
+          <div class="metric-value" id="newUsers">0</div>
+      </div>
+  </div>
+
+  <section class="admin-section">
+      <h2>Sales Overview</h2>
+      <div class="chart-container">
+          <canvas id="salesChart"></canvas>
+      </div>
+  </section>
+
+  <section class="admin-section">
+      <h2>Recent Orders</h2>
+      <table class="data-table" id="recentOrders">
+          <thead>
+              <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+              </tr>
+          </thead>
+          <tbody>
+              <!-- Order data will be inserted here -->
+          </tbody>
+      </table>
+  </section>
+</div>
 {% endblock content %}
+{% block script %}
+{{super()}}
+
+<script src="{{ url_for('static', filename='js/admin/home.js') }}"></script>
+{% endblock script %}

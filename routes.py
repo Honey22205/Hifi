@@ -318,7 +318,17 @@ def register_routes(app, db, bcrypt, mail):
 def admin_routes(app, db):
     @app.route('/admin')
     def admin():
-        return render_template('admin/admin.html')
+        return render_template('admin/home.html')
+    
+    @app.route('/admin/delivery_partner')
+    def delivery_partner():
+        pending_agents = DeliveryAgent.query.filter_by(is_approved=False).all()
+        accepted_agents = DeliveryAgent.query.filter_by(is_approved=True).all()
+        return render_template(
+            'admin/delivery_partner.html',
+            pending_agents=pending_agents,
+            accepted_agents=accepted_agents
+        )
     
 
 
@@ -327,3 +337,10 @@ def delivery_agent_routes(app, db):
     @app.route('/delivery-agent')
     def delivery_agent():
         return render_template('delivery_agent/delivery_agent.html')  
+    
+# customer routes
+def customer_routes(app, db):
+    @app.route('/user/profile')
+    @login_required
+    def customer():
+        return render_template('user/profile.html')

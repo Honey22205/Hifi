@@ -62,7 +62,7 @@
             <!-- Authentication Logic -->
             {% if user %}
             <li class="nav__item">
-              <a href="/profile" class="nav__link">{{ user.username.split()[0] | upper }}</a>
+              <a href="{{url_for('customer')}}" class="nav__link">{{ user.username.split()[0] | upper }}</a>
             </li>
             <li class="nav__item">
               <a href="{{ url_for('logout') }}" class="nav__link">Logout</a>

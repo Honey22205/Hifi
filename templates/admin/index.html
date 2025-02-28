@@ -4,77 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - HIFI Delivery Eats</title>
-  {% block css %}
-    <!-- Link to your admin-specific CSS file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin.css') }}">
-    <style>
-      /* Navbar modifications */
-      nav.navbar {
-        background-color: #fff; /* White navbar background */
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 15px 20px;
-      }
-      .nav-left .project-title {
-        margin: 0;
-        font-size: 24px;
-        color: #333; /* Title text color */
-      }
-      .nav-right ul {
-        list-style: none;
-        display: flex;
-        gap: 20px;
-        margin: 0;
-        padding: 0;
-      }
-      .nav-right ul li a {
-        color: #333; /* Nav link text color */
-        text-decoration: none;
-        transition: color 0.3s ease;
-      }
-      .nav-right ul li a:hover {
-        color: #008000; /* Green hover effect */
-      }
-    </style>
-  {% endblock css %}
+  <!-- Link to your admin-specific CSS file -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin.css') }}">
+  {% block css %}{% endblock css %}
 </head>
 <body>
-  <header>
-    <nav class="navbar">
-      <div class="nav-left">
-        <h2 class="project-title">HIFI Delivery Eats</h2>
-      </div>
-      <div class="nav-right">
-        <ul>
-          <li><a href="#">Dashboard</a></li>
-          <li><a href="#">Orders</a></li>
-          <li><a href="#">Users</a></li>
-          <li><a href="#">Settings</a></li>
-          <li><a href="#">Logout</a></li>
-        </ul>
-      </div>
+  <header class="header">
+    <div class="logo">HIFI Delivery Eats</div>
+    <nav class="nav-menu">
+      <a href="{{ url_for('admin') }}" class="{% if request.endpoint == 'admin' %}active{% endif %}">Dashboard</a>
+      <a href="#" class="{% if request.endpoint == 'orders' %}active{% endif %}">Orders</a>
+      <a href="#" class="{% if request.endpoint == 'users' %}active{% endif %}">Users</a>
+      <a href="{{ url_for('delivery_partner') }}" class="{% if request.endpoint == 'delivery_partner' %}active{% endif %}">Delivery Partner</a>
+      <a href="{{ url_for('employee_logout') }}">Logout</a>
     </nav>
+    
   </header>
+  
+  <!-- Dashboard stats section (currently commented out)
+  <section class="dashboard-stats">
+    <div class="stat-card">
+      <h2>Total Orders</h2>
+      <p>{{ total_orders }}</p>
+    </div>
+    <div class="stat-card">
+      <h2>Total Users</h2>
+      <p>{{ total_users }}</p>
+    </div>
+  </section>
+  -->
 
   <main>
-    <section class="welcome">
-      <h1>Welcome, {{ admin_name }}!</h1>
-      <p>Here's a quick overview of your dashboard:</p>
-    </section>
-
-    <section class="dashboard-stats">
-      <div class="stat-card">
-        <h2>Total Orders</h2>
-        <p>{{ total_orders }}</p>
-      </div>
-      <div class="stat-card">
-        <h2>Total Users</h2>
-        <p>{{ total_users }}</p>
-      </div>
-      <!-- Add additional stat cards as needed -->
-    </section>
-
     <section class="dashboard-content">
       {% block content %}
       <p>This is the admin dashboard. Use the navigation menu to manage different sections.</p>
@@ -83,8 +43,9 @@
   </main>
 
   {% block scripts %}
-    <!-- Link to your admin-specific JavaScript file -->
-    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+  <!-- Admin-specific JavaScript can be linked here
+  <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+  -->
   {% endblock scripts %}
 </body>
 </html>

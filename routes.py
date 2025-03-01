@@ -266,6 +266,7 @@ def register_routes(app, db, bcrypt, mail):
             password = request.form['password']
             username = request.form['username']
             delivery_area = request.form['delivery_area']
+            id_proof = request.form['id_proof']
             
             # Validate required fields
             if not all([phone, email, password, username, delivery_area]):
@@ -296,7 +297,8 @@ def register_routes(app, db, bcrypt, mail):
                 email=email,
                 phone=phone_int,
                 password=hashed_password,
-                delivery_area=delivery_area
+                delivery_area=delivery_area,
+                id_proof=id_proof
             )
             
             try:
@@ -317,10 +319,12 @@ def register_routes(app, db, bcrypt, mail):
 # Admin routes
 def admin_routes(app, db):
     @app.route('/admin')
+    @login_required
     def admin():
         return render_template('admin/home.html')
     
     @app.route('/admin/delivery_partner')
+    @login_required
     def delivery_partner():
         pending_agents = DeliveryAgent.query.filter_by(is_approved=False).all()
         accepted_agents = DeliveryAgent.query.filter_by(is_approved=True).all()
@@ -330,13 +334,64 @@ def admin_routes(app, db):
             accepted_agents=accepted_agents
         )
     
+    @app.route('/admin/accept/<int:id>', methods=['POST'])
+    def accept_agent(id):
+        agent = DeliveryAgent.query.get(id)
+        if not agent:
+            flash("Agent not found")
+            return jsonify({"message": "Agent not found"}), 404
+        agent.is_approved = True  # Set approval status
+        db.session.commit()
+        
+        flash(f"Agent {agent.username} accepted!")
+        return jsonify({"message": f"Agent {agent.username} accepted!"})
+    
+
+    @app.route('/admin/reject/<int:id>', methods=['POST'])
+    def reject_agent(id):
+        agent = DeliveryAgent.query.get(id)
+        if not agent:
+            flash("Agent not found")
+            return jsonify({"message": "Agent not found"}), 404
+
+        # Delete the agent from the database
+        db.session.delete(agent)
+        db.session.commit()
+        
+        flash(f"Agent {agent.username} has been rejected and removed from the database!")
+
+        return jsonify({"message": f"Agent {agent.username} has been rejected and removed from the database!"})
+    
+    @app.route('/admin/deactivate/<int:id>', methods=['POST'])
+    def deactivate_agent(id):
+        agent = DeliveryAgent.query.get(id)
+        if not agent:
+            flash("Agent not found")
+            return jsonify({"message": "Agent not found"}), 404
+        agent.is_active = False
+        db.session.commit()
+        flash(f"Agent {agent.username} has been deactivated.")
+        return jsonify({"message": f"Agent {agent.username} has been deactivated."})
+
+    @app.route('/admin/activate/<int:id>', methods=['POST'])
+    def activate_agent(id):
+        agent = DeliveryAgent.query.get(id)
+        if not agent:
+            flash("Agent not found")
+            return jsonify({"message": "Agent not found"}), 404
+        agent.is_active = True
+        db.session.commit()
+        flash(f"Agent {agent.username} has been activated.")
+        return jsonify({"message": f"Agent {agent.username} has been activated."})
+
+
 
 
 # Delivery agent routes
 def delivery_agent_routes(app, db):
     @app.route('/delivery-agent')
     def delivery_agent():
-        return render_template('delivery_agent/delivery_agent.html')  
+        return render_template('delivery_agent/dashboard.html')  
     
 # customer routes
 # def customer_routes(app, db):

@@ -1,12 +1,21 @@
-{% extends 'admin/index.html' %}
+{% extends 'admin/index.html' %} {% block css %} {{ super() }}
+<!-- Link to the home-specific CSS file -->
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/admin/delivery_partner.css') }}"
+/>
+{% endblock css %} {% block content %}
+<!-- Custom Confirmation Modal -->
+<div id="confirmationModal" class="modal">
+  <div class="modal-content">
+    <p id="modalMessage"></p>
+    <div class="modal-actions">
+      <button id="confirmBtn" class="confirm-btn">Confirm</button>
+      <button id="cancelBtn" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
 
-{% block css %}
-  {{ super() }}
-  <!-- Link to the home-specific CSS file -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/delivery_partner.css') }}">
-{% endblock css %}
-
-{% block content %}
 <h2>Delivery Partners</h2>
 
 <div class="table-container">
@@ -18,7 +27,7 @@
         <th>ID</th>
         <th>Email</th>
         <th>Phone</th>
-        <th>Address</th>
+        <th>Delivery Area</th>
         <th>ID Proof</th>
         <th>Actions</th>
       </tr>
@@ -33,8 +42,12 @@
         <td>{{ agent.delivery_area }}</td>
         <td>{{ agent.id_proof }}</td>
         <td>
-          <button class="accept" onclick="handleAccept({{ agent.id }})">Accept</button>
-          <button class="reject" onclick="handleReject({{ agent.id }})">Reject</button>
+          <button class="accept" onclick="handleAccept({{ agent.id }})">
+            Accept
+          </button>
+          <button class="reject" onclick="handleReject({{ agent.id }})">
+            Reject
+          </button>
         </td>
       </tr>
       {% else %}
@@ -55,8 +68,9 @@
         <th>ID</th>
         <th>Email</th>
         <th>Phone</th>
-        <th>Address</th>
+        <th>Delivery Area</th>
         <th>ID Proof</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody id="acceptedAgentsList">
@@ -68,18 +82,27 @@
         <td>{{ agent.phone }}</td>
         <td>{{ agent.delivery_area }}</td>
         <td>{{ agent.id_proof }}</td>
+        <td>
+          {% if agent.is_active %}
+          <button class="deactivate" onclick="handleDeactivate({{ agent.id }})">
+            Inactive
+          </button>
+          {% else %}
+          <button class="activate" onclick="handleActivate({{ agent.id }})">
+            Active
+          </button>
+          {% endif %}
+        </td>
       </tr>
       {% else %}
       <tr>
-        <td colspan="6">No accepted agents.</td>
+        <td colspan="7">No accepted agents.</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
-{% endblock content %}
-
-{% block scripts %}
+{% endblock content %} {% block scripts %} {{ super() }}
 <!-- Link to your admin-specific JavaScript file -->
 <script src="{{ url_for('static', filename='js/admin/delivery_partner.js') }}"></script>
 {% endblock scripts %}

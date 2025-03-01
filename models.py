@@ -71,7 +71,7 @@ class DeliveryAgent(UserMixin, db.Model):
     available_slots = db.Column(db.Boolean, nullable=False, default=True)
     id_proof = db.Column(db.String(12), nullable=False, server_default='')
     is_approved = db.Column(db.Boolean, nullable=False, server_default='0')
-
+    is_active = db.Column(db.Boolean, nullable=False, server_default='1')
 
     
     def __repr__(self):

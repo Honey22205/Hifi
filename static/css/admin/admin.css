@@ -129,3 +129,24 @@ body {
 .data-table tr:hover {
   background-color: #ddd;
 }
+
+.flash-message {
+  background: #ffffff;
+  color: #2e7d32;
+  border: 1px solid #2e7d32;
+  padding: 10px 20px;
+  border-radius: 5px;
+  position: relative;
+  margin: 20px auto;
+  max-width: 1000px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 1rem;
+}
+.flash-message .flash-close {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+}

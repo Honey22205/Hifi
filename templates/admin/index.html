@@ -6,7 +6,8 @@
   <title>Admin Dashboard - HIFI Delivery Eats</title>
   <!-- Link to your admin-specific CSS file -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin.css') }}">
-  {% block css %}{% endblock css %}
+  {% block css %}
+  {% endblock css %}
 </head>
 <body>
   <header class="header">
@@ -18,21 +19,19 @@
       <a href="{{ url_for('delivery_partner') }}" class="{% if request.endpoint == 'delivery_partner' %}active{% endif %}">Delivery Partner</a>
       <a href="{{ url_for('employee_logout') }}">Logout</a>
     </nav>
-    
   </header>
-  
-  <!-- Dashboard stats section (currently commented out)
-  <section class="dashboard-stats">
-    <div class="stat-card">
-      <h2>Total Orders</h2>
-      <p>{{ total_orders }}</p>
-    </div>
-    <div class="stat-card">
-      <h2>Total Users</h2>
-      <p>{{ total_users }}</p>
-    </div>
-  </section>
-  -->
+
+  <!-- Flash Message Section -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div id="flash-message" class="flash-message">
+        <span class="flash-close" onclick="document.getElementById('flash-message').style.display='none';">&times;</span>
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
   <main>
     <section class="dashboard-content">
@@ -43,9 +42,17 @@
   </main>
 
   {% block scripts %}
-  <!-- Admin-specific JavaScript can be linked here
-  <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-  -->
+  <script>
+    // Automatically hide flash message after 3 seconds
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var flash = document.getElementById('flash-message');
+        if (flash) {
+          flash.style.display = 'none';
+        }
+      }, 3000);
+    });
+  </script>
   {% endblock scripts %}
 </body>
 </html>

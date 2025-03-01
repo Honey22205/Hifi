@@ -1,0 +1,52 @@
+{% extends "delivery_agent/index.html" %}
+{% block content %}
+<header>
+    <h1>Delivery Agent Dashboard</h1>
+    <div class="admin-card">
+        <img src="https://img.lovepik.com/element/45001/3052.png_860.png" alt="Profile" class="profile-image">
+        <div class="admin-info">
+            <p><strong>varshit</strong></p>
+            <p class="role">Admin</p>
+        </div>
+    </div>
+</header>
+<section class="dashboard-stats">
+    <div class="card">📈 Total Orders Today <h2>30</h2></div>
+    <div class="card completed">🛍️ Completed Orders <h2>28</h2></div>
+    <div class="card pending">📊 Pending Orders <h2>2</h2></div>
+</section>
+<section class="recent-orders">
+    <h2>Recent Orders</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Product Number</th>
+                <th>Payments</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Paneer Masala</td>
+                <td>4563</td>
+                <td>Due</td>
+                <td class="pending">Pending</td>
+                <td><a href="#">Details</a></td>
+            </tr>
+            <tr>
+                <td>Curd Rice</td>
+                <td>4563</td>
+                <td>Due</td>
+                <td class="pending">Pending</td>
+                <td><a href="#">Details</a></td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+<div class="side-info">
+    <div class="side-card"><h3>Recent Updates</h3><p>Abdul received his order of Mutton Kheema</p><p>Kalyan received his order of Dosa</p></div>
+    <div class="side-card"><h3>Agent Ranking</h3><p>⭐ Ali Muhammad<br>Last seen 2 hours ago</p></div>
+</div>
+{% endblock content %}

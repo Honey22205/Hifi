@@ -190,17 +190,29 @@ def register_routes(app, db, bcrypt, mail):
                 delivery_agent = DeliveryAgent.query.filter(
                     or_(DeliveryAgent.phone == username, DeliveryAgent.email == username)
                 ).first()
-                if delivery_agent and bcrypt.check_password_hash(delivery_agent.password, password):
-                    login_user(delivery_agent)
-                    return redirect(url_for('delivery_agent'))
+                if delivery_agent:
+                    # Check if the account is approved and active
+                    if not (delivery_agent.is_approved and delivery_agent.is_active):
+                        flash('Your account is either not approved or inactive. Please contact support.')
+                        return render_template('employee_login.html', message='Your account is either not approved or inactive.')
+                    # Check password
+                    if bcrypt.check_password_hash(delivery_agent.password, password):
+                        login_user(delivery_agent)
+                        return redirect(url_for('delivery_agent'))
+                    else:
+                        flash('Invalid username or password')
+                        return render_template('employee_login.html', message='Invalid username or password')
                 else:
-                    return render_template('employee_login.html', message='Invalid username or password')    
+                    flash('Invalid username or password')
+                    return render_template('employee_login.html', message='Invalid username or password')
             
             else:
+                flash('Invalid role')
                 return render_template('employee_login.html', message='Invalid role')
         
         else:
             return render_template('employee_login.html')
+
         
     @app.route('/employee-signup', methods=['POST'])
     def employee_signup():
@@ -289,7 +301,7 @@ def register_routes(app, db, bcrypt, mail):
             ).first()
             if existing_delivery_agent:
                 flash('Email or phone number already registered')
-                return jsonify({'success': False, 'error': 'Email or phone number already registered'}), 400
+                return render_template('delivery_agent_signup.html')
             
             # Create new delivery agent user
             new_delivery_agent = DeliveryAgent(
@@ -304,8 +316,8 @@ def register_routes(app, db, bcrypt, mail):
             try:
                 db.session.add(new_delivery_agent)
                 db.session.commit()
-                flash('Signup successful!')
-                return redirect(url_for('delivery_signup'))
+                flash('Signup successful! Your request is sended to administrator')
+                return redirect('employee-login')
             except Exception as e:
                 db.session.rollback()
                 flash('Database error occurred')
@@ -319,9 +331,16 @@ def register_routes(app, db, bcrypt, mail):
 # Admin routes
 def admin_routes(app, db):
     @app.route('/admin')
-    @login_required
     def admin():
+        if not current_user.is_authenticated:
+            return redirect(url_for('employee_login'))
+        
+        if current_user.role != 'admin':
+            flash("Access denied. Admins only.")
+            return redirect(url_for('employee_login'))
+        
         return render_template('admin/home.html')
+
     
     @app.route('/admin/delivery_partner')
     @login_required
@@ -393,14 +412,9 @@ def delivery_agent_routes(app, db):
     def delivery_agent():
         return render_template('delivery_agent/dashboard.html')  
     
-# customer routes
-# def customer_routes(app, db):
-#     @app.route('/user/profile')
-#     @login_required
-#     def customer():
-#         return render_template('user/profile.html')
 
 
+# Customer routes
 def customer_routes(app, db):
     @app.route('/user/profile')
     @login_required

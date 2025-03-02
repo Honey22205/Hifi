@@ -1,4 +1,4 @@
-from flask import Flask, redirect
+from flask import Flask, redirect, request, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -45,8 +45,11 @@ def create_app():
         return Customer.query.get(int(id))
     
     @login_manager.unauthorized_handler
-    def unauthorized_callback(): # to handle the unauthorized access
-        return redirect('/login')
+    def unauthorized_callback():
+        if '/admin' in request.path or '/delivery-agent' in request.path:
+            return redirect(url_for('employee_login'))
+        else:
+            return redirect('/login')
     
     # mail
     app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')

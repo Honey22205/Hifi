@@ -7,9 +7,15 @@
   max-height: 90vh;      
   overflow-y: auto;      
   border-radius: 12px;
-  max-width: fit-content;
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
+  /* Hide scrollbar for IE, Edge */
+  -ms-overflow-style: none;
 }
 
+.profile-container::-webkit-scrollbar {
+  display: none;
+}
 /* ========== Profile Header ========== */
 .profile-header {
   margin-bottom: 2.5rem;

@@ -15,7 +15,7 @@ def register_routes(app, db, bcrypt, mail):
     @app.route('/signup', methods=['POST', 'GET'])
     def signup():
         if request.method == 'POST':
-            print("DEBUG: Form Data Received ->", request.form)  # 🚀 Print all form data
+            print("DEBUG: Form Data Received ->", request.form)  
 
             username = request.form.get('username')
             email = request.form.get('email')

@@ -335,10 +335,6 @@ def admin_routes(app, db):
         if not current_user.is_authenticated:
             return redirect(url_for('employee_login'))
         
-        if current_user.role != 'admin':
-            flash("Access denied. Admins only.")
-            return redirect(url_for('employee_login'))
-        
         return render_template('admin/home.html')
 
     

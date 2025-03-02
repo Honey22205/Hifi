@@ -18,6 +18,11 @@ body {
 }
 
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -53,6 +58,10 @@ body {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.container, main {
+  margin-top: 80px; /* Adjust value based on the header's height */
 }
 
 .welcome-section {

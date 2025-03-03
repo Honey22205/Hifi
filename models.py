@@ -10,7 +10,12 @@ class Customer(UserMixin, db.Model):
     phone = db.Column(db.Integer,unique=True, nullable=False) 
     password = db.Column(db.String(100), nullable=False)
     # address = db.Column(db.String(100), nullable=False)
+    
+    
     addresses = db.relationship("Address", backref="customer", lazy=True)
+    # Establish relationship with orders
+    orders = db.relationship("Order", back_populates="user", foreign_keys="Order.user_id")  # Orders placed by the user
+
 
     # @staticmethod
     # def generate_id():
@@ -94,6 +99,8 @@ class Order(db.Model):
     delivered_at = db.Column(db.DateTime, nullable=True)
     
     items = db.relationship("OrderItem", backref="order", lazy=True)
+    user = db.relationship("Customer", back_populates="orders", foreign_keys=[user_id])  # Link to the user
+
 
     def __repr__(self):
         return f'<Order {self.id}, Status: {self.status}>'

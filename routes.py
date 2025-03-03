@@ -53,6 +53,31 @@ def register_routes(app, db, bcrypt, mail):
             )
             db.session.add(new_address)
             db.session.commit()
+            
+            # Send welcome email
+            try:
+                msg = Message(
+                    "Welcome to HIFI Delivery Eats!",
+                    sender=app.config['MAIL_USERNAME'],
+                    recipients=[email]
+                )
+                msg.body = f"""
+                    Hello {username},
+
+                    Thank you for signing up for HIFI Delivery Eats!
+
+                    Your registered email: {email}
+                    Your registered phone: {phone}
+
+                    We are excited to have you on board.
+
+                    Regards,  
+                    HIFI Delivery Eats Team
+                """
+                mail.send(msg)
+                print("Welcome email sent successfully.")
+            except Exception as e:
+                print(f"Error sending email: {e}")
 
             flash('Signup successful!', 'success')
             return redirect(url_for('index'))

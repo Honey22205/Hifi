@@ -76,7 +76,9 @@
     <tbody id="acceptedAgentsList">
       {% for agent in accepted_agents %}
       <tr id="user-{{ agent.id }}">
-        <td>{{ agent.username }}</td>
+        <td style="color: {% if not agent.is_active %}red{% else %}green{% endif %};">
+          {{ agent.username }}
+        </td>
         <td>DA{{ agent.id }}</td>
         <td>{{ agent.email }}</td>
         <td>{{ agent.phone }}</td>

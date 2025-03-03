@@ -146,11 +146,13 @@ body {
   padding: 10px 20px;
   border-radius: 5px;
   position: relative;
-  margin: 20px auto;
+  margin: 100px auto 20px auto; /* Increased top margin to clear fixed header */
   max-width: 1000px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   font-size: 1rem;
+  z-index: 1100; /* Optional: ensure it appears above other content if needed */
 }
+
 .flash-message .flash-close {
   position: absolute;
   top: 5px;

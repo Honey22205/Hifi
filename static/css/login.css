@@ -189,3 +189,9 @@ h3 {
     font-weight: 500;
   }
   
+  /* Horizontal separator style */
+  hr.separator {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #ccc;
+  }

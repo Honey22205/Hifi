@@ -1,12 +1,15 @@
-{% extends 'admin/index.html' %} {% block css %} {{ super() }}
-<!-- Link to the home-specific CSS file -->
-<link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/admin/delivery_partner.css') }}"
-/>
-{% endblock css %} {% block content %}
+{% extends 'admin/index.html' %}
+{% block css %}
+  {{ super() }}
+  <!-- Link to the home-specific CSS file -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/admin/delivery_partner.css') }}"
+  />
+{% endblock css %}
+{% block content %}
 <!-- Custom Confirmation Modal -->
-<div id="confirmationModal" class="modal">
+<div id="confirmationModal" class="modal" style="display:none;">
   <div class="modal-content">
     <p id="modalMessage"></p>
     <div class="modal-actions">
@@ -15,11 +18,10 @@
     </div>
   </div>
 </div>
-
 <h2>Delivery Partners</h2>
 
 <div class="table-container">
-  <h3>Pending Agents</h3>
+  <h3>Pending Partners</h3>
   <table>
     <thead>
       <tr>
@@ -85,15 +87,15 @@
         <td>{{ agent.delivery_area }}</td>
         <td>{{ agent.id_proof }}</td>
         <td>
-          {% if agent.is_active %}
-          <button class="deactivate" onclick="handleDeactivate({{ agent.id }})">
-            Inactive
-          </button>
-          {% else %}
-          <button class="activate" onclick="handleActivate({{ agent.id }})">
-            Active
-          </button>
-          {% endif %}
+          <!-- Toggle switch for active status -->
+          <label class="switch">
+            <input
+              type="checkbox"
+              onchange="confirmToggleAgent({{ agent.id }}, this)"
+              {{ 'checked' if agent.is_active else '' }}
+            />
+            <span class="slider"></span>
+          </label>
         </td>
       </tr>
       {% else %}
@@ -104,7 +106,49 @@
     </tbody>
   </table>
 </div>
-{% endblock content %} {% block scripts %} {{ super() }}
-<!-- Link to your admin-specific JavaScript file -->
-<script src="{{ url_for('static', filename='js/admin/delivery_partner.js') }}"></script>
+{% endblock content %}
+{% block scripts %}
+  {{ super() }}
+  <!-- Link to your admin-specific JavaScript file -->
+  <script src="{{ url_for('static', filename='js/admin/delivery_partner.js') }}"></script>
+  <script>
+    function confirmToggleAgent(agentId, checkbox) {
+      // Prevent multiple confirmations if modal is already open.
+      const modal = document.getElementById("confirmationModal");
+      if (modal.style.display === "block") return;
+      
+      // Determine intended new state.
+      const newState = checkbox.checked;
+      // Save the current state (the opposite) for reverting if needed.
+      const originalState = !newState;
+      
+      // Set modal message.
+      document.getElementById("modalMessage").innerText =
+        `Are you sure you want to ${newState ? "activate" : "deactivate"} this delivery partner?`;
+      modal.style.display = "block";
+      
+      // Attach event listeners with once:true so they fire only once.
+      document.getElementById("confirmBtn").addEventListener('click', function confirmHandler() {
+        if (newState) {
+          handleActivate(agentId).then(success => {
+            if (!success) {
+              checkbox.checked = originalState; // Revert if update fails.
+            }
+          });
+        } else {
+          handleDeactivate(agentId).then(success => {
+            if (!success) {
+              checkbox.checked = originalState; // Revert if update fails.
+            }
+          });
+        }
+        modal.style.display = "none";
+      }, { once: true });
+      
+      document.getElementById("cancelBtn").addEventListener('click', function cancelHandler() {
+        checkbox.checked = originalState; // Revert to original state.
+        modal.style.display = "none";
+      }, { once: true });
+    }
+  </script>
 {% endblock scripts %}

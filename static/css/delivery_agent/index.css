@@ -145,3 +145,8 @@ td a {
     display: flex;
     flex-direction: column;
 }
+
+.logout {
+    text-decoration: none;
+    color: white;
+  }

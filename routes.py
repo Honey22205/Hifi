@@ -431,8 +431,15 @@ def admin_routes(app, db):
 def delivery_agent_routes(app, db):
     @app.route('/delivery-agent')
     def delivery_agent():
-        return render_template('delivery_agent/dashboard.html')  
+        return render_template('delivery_agent/dashboard.html', user=current_user)  
     
+    @app.route('/delivery-partner/profile')
+    def delivery_partner_profile():
+        return render_template('delivery_agent/profile.html', user=current_user)
+    
+    @app.route('/delivery-partner/order-detail')
+    def delivery_partner_order_detail():
+        return render_template('delivery_agent/order_detail.html', user=current_user)
 
 
 # Customer routes

@@ -1,0 +1,82 @@
+{% extends "/delivery_agent/index.html" %}
+{% block css %}
+<link rel="stylesheet" href="/css/delivery_agent/order_detail.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock css %}
+{% block content %}
+<header>
+    <div class="logo">
+        <span class="logo-icon"></span>
+        <h1>Order Detail</h1>
+    </div>
+    <div class="order-status">
+        <span class="status-label">Status:</span>
+        <span class="status-value" id="orderStatus">Preparing</span>
+    </div>
+</header>
+
+<main>
+    <section class="order-info card">
+        <h2>Order #HF12345</h2>
+        <p class="order-time">Ordered at: <span id="orderTime">2025-03-04 14:30</span></p>
+        <div class="estimated-delivery">
+            <i class="fas fa-clock"></i>
+            <span>Estimated Delivery: </span>
+            <span id="estimatedDelivery">30:00</span>
+        </div>
+    </section>
+    
+    <section class="customer-info card">
+        <h2>Customer Details</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <i class="fas fa-user"></i>
+                <p id="customerName">John Doe</p>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-phone"></i>
+                <p id="customerPhone">+1 (555) 123-4567</p>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <p id="customerAddress">123 Main St, Anytown, USA 12345</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="order-items card">
+        <h2>Ordered Items</h2>
+        <ul id="itemList">
+            <!-- Items will be populated by JavaScript -->
+        </ul>
+        <div class="order-summary">
+            <div class="summary-item">
+                <span>Subtotal:</span>
+                <span id="subtotal">₹0.00</span>
+            </div>
+            <div class="summary-item">
+                <span>Delivery Fee:</span>
+                <span id="deliveryFee">₹0.00</span>
+            </div>
+            <div class="summary-item">
+                <span>Tax:</span>
+                <span id="tax">₹0.00</span>
+            </div>
+            <div class="summary-item total">
+                <span>Total:</span>
+                <span id="orderTotal">₹0.00</span>
+            </div>
+        </div>
+    </section>
+    
+    <section class="delivery-actions card">
+        <button id="acceptBtn" class="btn btn-primary">Accept Order</button>
+        <button id="completeBtn" class="btn btn-success" disabled>Complete Delivery</button>
+    </section>
+</main>
+{% endblock content %}
+
+{% block script %}
+    <script src="/js/delivery_agent/order_detail.js"></script>
+{% endblock %}

@@ -1,12 +1,12 @@
 {% extends "delivery_agent/index.html" %}
 {% block content %}
 <header>
-    <h1>Delivery Partners Dashboard</h1>
+    <h1>Delivery Partner Dashboard</h1>
     <div class="admin-card">
         <img src="https://img.lovepik.com/element/45001/3052.png_860.png" alt="Profile" class="profile-image">
         <div class="admin-info">
-            <p><strong>varshit</strong></p>
-            <p class="role">Admin</p>
+            <p><strong>{{user.username}}</strong></p>
+            <p class="role">Delivery Partner</p>
         </div>
     </div>
 </header>
@@ -33,14 +33,14 @@
                 <td>4563</td>
                 <td>Due</td>
                 <td class="pending">Pending</td>
-                <td><a href="#">Details</a></td>
+                <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
             </tr>
             <tr>
                 <td>Curd Rice</td>
                 <td>4563</td>
                 <td>Due</td>
                 <td class="pending">Pending</td>
-                <td><a href="#">Details</a></td>
+                <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
             </tr>
         </tbody>
     </table>

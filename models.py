@@ -10,7 +10,12 @@ class Customer(UserMixin, db.Model):
     phone = db.Column(db.Integer,unique=True, nullable=False) 
     password = db.Column(db.String(100), nullable=False)
     # address = db.Column(db.String(100), nullable=False)
+    
+    
     addresses = db.relationship("Address", backref="customer", lazy=True)
+    # Establish relationship with orders
+    orders = db.relationship("Order", back_populates="user", foreign_keys="Order.user_id")  # Orders placed by the user
+
 
     # @staticmethod
     # def generate_id():
@@ -79,3 +84,47 @@ class DeliveryAgent(UserMixin, db.Model):
     
     def get_id(self):
         return self.id
+    
+
+# Order Model
+class Order(db.Model):
+    __tablename__ = 'order'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    delivery_agent_id = db.Column(db.Integer, db.ForeignKey('delivery_agent.id'), nullable=True)
+    status = db.Column(db.String(50), nullable=False, default="Pending")
+    total_price = db.Column(db.Float, nullable=False)
+    delivery_location = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=func.now())
+    delivered_at = db.Column(db.DateTime, nullable=True)
+    
+    items = db.relationship("OrderItem", backref="order", lazy=True)
+    user = db.relationship("Customer", back_populates="orders", foreign_keys=[user_id])  # Link to the user
+
+
+    def __repr__(self):
+        return f'<Order {self.id}, Status: {self.status}>'
+
+# OrderItem Model
+class OrderItem(db.Model):
+    __tablename__ = 'order_item'
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    menu_item_id = db.Column(db.Integer, db.ForeignKey('menu_item.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return f'<OrderItem {self.id}, Order: {self.order_id}, Item: {self.menu_item_id}>'
+
+# MenuItem Model
+class MenuItem(db.Model):
+    __tablename__ = 'menu_item'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    image_url = db.Column(db.String(255), nullable=True)
+
+    def __repr__(self):
+        return f'<MenuItem {self.name}, Price: {self.price}>'

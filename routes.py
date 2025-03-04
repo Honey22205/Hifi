@@ -15,7 +15,7 @@ def register_routes(app, db, bcrypt, mail):
     @app.route('/signup', methods=['POST', 'GET'])
     def signup():
         if request.method == 'POST':
-            print("DEBUG: Form Data Received ->", request.form)  
+            # print("DEBUG: Form Data Received ->", request.form)  
 
             username = request.form.get('username')
             email = request.form.get('email')
@@ -140,16 +140,16 @@ def register_routes(app, db, bcrypt, mail):
             if user:
                 try:
                     reset_token = secrets.token_urlsafe(16)  
-                    print(reset_token)
+                    # print(reset_token)
                     reset_link = url_for('reset_password', token=reset_token, _external=True)
-                    print(reset_link)
+                    # print(reset_link)
 
                     msg = Message(
                         'Password Reset Request',
                         sender=app.config['MAIL_USERNAME'],
                         recipients=[email]
                     )
-                    print(msg)
+                    # print(msg)
                     msg.body = f"""
                         Hello {user.username},
 
@@ -164,12 +164,12 @@ def register_routes(app, db, bcrypt, mail):
                     """
 
                     mail.send(msg)
-                    print('Mail sent successfully')
+                    # print('Mail sent successfully')
 
                     return jsonify({'success': True, 'message': 'Reset link sent successfully'})
 
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     return jsonify({'success': False, 'error': f'Error sending email: {str(e)}'})
 
             return jsonify({'success': False, 'error': 'Email not found'})
@@ -193,17 +193,17 @@ def register_routes(app, db, bcrypt, mail):
             username = request.form['phone-email']
             password = request.form['password']
             role = request.form['role']  # "admin" or "delivery-agent"
-            print(username, password, role)
+            # print(username, password, role)
 
             if role == 'admin':
                 # Allow login using phone or email
                 admin = Admin.query.filter(
                     or_(Admin.phone == username, Admin.email == username)
                 ).first()
-                print(admin)
+                # print(admin)
                 if admin and bcrypt.check_password_hash(admin.password, password):
                     login_user(admin)
-                    print("Login successful")
+                    # print("Login successful")
                     session['user_id'] = admin.id  # Store user ID in session
                     return redirect(url_for('admin'))
                 else:

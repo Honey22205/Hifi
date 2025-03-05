@@ -72,6 +72,8 @@ class DeliveryAgent(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     phone = db.Column(db.Integer, unique=True, nullable=False) 
     password = db.Column(db.String(100), nullable=False)
+    image = db.Column(db.String(255), nullable=True, server_default='')
+    bio = db.Column(db.Text, nullable=True, server_default='')
     delivery_area = db.Column(db.String(100), nullable=False)  
     available_slots = db.Column(db.Boolean, nullable=False, default=True)
     id_proof = db.Column(db.String(12), nullable=False, server_default='')

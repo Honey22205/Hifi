@@ -26,6 +26,9 @@ db=SQLAlchemy(metadata=metadata)
 def create_app():
     app = Flask(__name__, template_folder='templates', static_folder='static', static_url_path='/')
     
+    # set up file upload folder
+    app.config['UPLOAD_FOLDER'] = 'static/uploads/'
+    
     # change databse what we use
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     

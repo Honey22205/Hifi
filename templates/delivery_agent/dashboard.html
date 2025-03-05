@@ -1,52 +1,185 @@
-{% extends "delivery_agent/index.html" %}
-{% block content %}
+{% extends "delivery_agent/index.html" %} {% block content %}
 <header>
-    <h1>Delivery Partner Dashboard</h1>
-    <div class="admin-card">
-        <img src="https://img.lovepik.com/element/45001/3052.png_860.png" alt="Profile" class="profile-image">
-        <div class="admin-info">
-            <p><strong>{{user.username}}</strong></p>
-            <p class="role">Delivery Partner</p>
-        </div>
+  <h1>Delivery Partner Dashboard</h1>
+  <div class="admin-card">
+    <img
+      src="https://img.lovepik.com/element/45001/3052.png_860.png"
+      alt="Profile"
+      class="profile-image"
+    />
+    <div class="admin-info">
+      <p><strong>{{user.username}}</strong></p>
+      <p class="role">Delivery Partner</p>
     </div>
+  </div>
 </header>
 <section class="dashboard-stats">
-    <div class="card">📈 Total Orders Today <h2>30</h2></div>
-    <div class="card completed">🛍️ Completed Orders <h2>28</h2></div>
-    <div class="card pending">📊 Pending Orders <h2>2</h2></div>
+  <div class="card">
+    📈 Total Orders Today
+    <h2>30</h2>
+  </div>
+  <div class="card completed">
+    🛍️ Completed Orders
+    <h2>28</h2>
+  </div>
+  <div class="card pending">
+    📊 Pending Orders
+    <h2>2</h2>
+  </div>
 </section>
 <section class="recent-orders">
-    <h2>Recent Orders</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Product Name</th>
-                <th>Product Number</th>
-                <th>Payments</th>
-                <th>Status</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Paneer Masala</td>
-                <td>4563</td>
-                <td>Due</td>
-                <td class="pending">Pending</td>
-                <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
-            </tr>
-            <tr>
-                <td>Curd Rice</td>
-                <td>4563</td>
-                <td>Due</td>
-                <td class="pending">Pending</td>
-                <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
-            </tr>
-        </tbody>
-    </table>
+  <h2>Pending Deliveries</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Scheduled Delivery Time</th>
+        <th>Customer Details</th>
+        <th>Package Details</th>
+        <th>Delivery Location</th>
+        <th>Delivery Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>12347</td>
+        <td>2025-03-04 02:00 PM</td>
+        <td>Amit Singh, 9876543212</td>
+        <td>Butter Naan & Chicken Curry</td>
+        <td>Bandra West, Mumbai</td>
+        <td class="pending">Out for Delivery</td>
+        <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
+      </tr>
+      <tr>
+        <td>12348</td>
+        <td>2025-03-04 02:30 PM</td>
+        <td>Sneha Rao, 9876543213</td>
+        <td>Veg Thali</td>
+        <td>Andheri East, Mumbai</td>
+        <td class="pending">Pending Pickup</td>
+        <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+<section class="recent-orders">
+  <h2>Completed Deliveries</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Delivery Date & Time</th>
+        <th>Customer Details</th>
+        <th>Restaurant Details</th>
+        <th>Package Details</th>
+        <th>Earnings</th>
+        <th>Customer Feedback</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>12345</td>
+        <td>2025-03-04 12:30 PM</td>
+        <td>Rahul Sharma, 9876543210</td>
+        <td>Spicy Bites, Mumbai</td>
+        <td>Biryani, 1 Pack</td>
+        <td>₹150</td>
+        <td>4.5⭐</td>
+      </tr>
+      <tr>
+        <td>12346</td>
+        <td>2025-03-04 01:00 PM</td>
+        <td>Pooja Verma, 9876543211</td>
+        <td>Tandoori Hut, Mumbai</td>
+        <td>Paneer Tikka, 2 Plates</td>
+        <td>₹200</td>
+        <td>5.0⭐</td>
+      </tr>
+      <tr>
+        <td>12349</td>
+        <td>2025-03-04 01:30 PM</td>
+        <td>Vikram Rao, 9876543214</td>
+        <td>Chinese Wok, Mumbai</td>
+        <td>Hakka Noodles, 1 Plate</td>
+        <td>₹120</td>
+        <td>4.0⭐</td>
+      </tr>
+      <tr>
+        <td>12350</td>
+        <td>2025-03-04 02:00 PM</td>
+        <td>Neha Gupta, 9876543215</td>
+        <td>Punjabi Tadka, Mumbai</td>
+        <td>Chole Bhature, 2 Plates</td>
+        <td>₹180</td>
+        <td>4.8⭐</td>
+      </tr>
+      <tr>
+        <td>12351</td>
+        <td>2025-03-04 02:30 PM</td>
+        <td>Aryan Mehta, 9876543216</td>
+        <td>South Spice, Mumbai</td>
+        <td>Masala Dosa, 1 Plate</td>
+        <td>₹100</td>
+        <td>4.6⭐</td>
+      </tr>
+      <tr>
+        <td>12352</td>
+        <td>2025-03-04 03:00 PM</td>
+        <td>Rohan Desai, 9876543217</td>
+        <td>Grill House, Mumbai</td>
+        <td>Grilled Chicken, 1 Full</td>
+        <td>₹250</td>
+        <td>5.0⭐</td>
+      </tr>
+      <tr>
+        <td>12353</td>
+        <td>2025-03-04 03:30 PM</td>
+        <td>Priya Nair, 9876543218</td>
+        <td>Urban Bites, Mumbai</td>
+        <td>Pasta Alfredo, 1 Plate</td>
+        <td>₹150</td>
+        <td>4.7⭐</td>
+      </tr>
+      <tr>
+        <td>12354</td>
+        <td>2025-03-04 04:00 PM</td>
+        <td>Amit Kapoor, 9876543219</td>
+        <td>Pizza Corner, Mumbai</td>
+        <td>Margherita Pizza, Medium</td>
+        <td>₹200</td>
+        <td>4.9⭐</td>
+      </tr>
+      <tr>
+        <td>12355</td>
+        <td>2025-03-04 04:30 PM</td>
+        <td>Simran Kaur, 9876543220</td>
+        <td>Juice Junction, Mumbai</td>
+        <td>Fresh Orange Juice, 1 Glass</td>
+        <td>₹80</td>
+        <td>4.3⭐</td>
+      </tr>
+      <tr>
+        <td>12356</td>
+        <td>2025-03-04 05:00 PM</td>
+        <td>Ravi Patil, 9876543221</td>
+        <td>Burger Town, Mumbai</td>
+        <td>Cheese Burger, 1 Piece</td>
+        <td>₹120</td>
+        <td>4.6⭐</td>
+      </tr>
+    </tbody>
+  </table>
 </section>
 <div class="side-info">
-    <div class="side-card"><h3>Recent Updates</h3><p>Abdul received his order of Mutton Kheema</p><p>Kalyan received his order of Dosa</p></div>
-    <div class="side-card"><h3>Agent Ranking</h3><p>⭐ Ali Muhammad<br>Last seen 2 hours ago</p></div>
+  <div class="side-card">
+    <h3>Recent Updates</h3>
+    <p>Abdul received his order of Mutton Kheema</p>
+    <p>Kalyan received his order of Dosa</p>
+  </div>
+  <div class="side-card">
+    <h3>Agent Ranking</h3>
+    <p>⭐ Ali Muhammad<br />Last seen 2 hours ago</p>
+  </div>
 </div>
 {% endblock content %}

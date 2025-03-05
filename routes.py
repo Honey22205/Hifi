@@ -1,9 +1,11 @@
+import os
 import secrets
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
 from sqlalchemy import or_
 from models import Customer, Admin, DeliveryAgent, Address
 from flask_login import login_user, logout_user, current_user, login_required
+from werkzeug.utils import secure_filename
 
 def register_routes(app, db, bcrypt, mail):
     @app.route('/')
@@ -205,6 +207,7 @@ def register_routes(app, db, bcrypt, mail):
                     login_user(admin)
                     # print("Login successful")
                     session['user_id'] = admin.id  # Store user ID in session
+                    db.session.refresh(current_user)
                     return redirect(url_for('admin'))
                 else:
                     flash('Invalid username or password')
@@ -223,7 +226,8 @@ def register_routes(app, db, bcrypt, mail):
                     # Check password
                     if bcrypt.check_password_hash(delivery_agent.password, password):
                         login_user(delivery_agent)
-                        return redirect(url_for('delivery_agent'))
+                        db.session.refresh(current_user)
+                        return redirect(url_for('delivery_agent', user=delivery_agent))
                     else:
                         flash('Invalid username or password')
                         return render_template('employee_login.html', message='Invalid username or password')
@@ -435,13 +439,69 @@ def delivery_agent_routes(app, db):
     
     @app.route('/delivery-partner/profile')
     def delivery_partner_profile():
-        return render_template('delivery_agent/profile.html', user=current_user)
+        # Ensure the user is authenticated.
+        if not current_user.is_authenticated:
+            flash("Please log in to access your profile.", "danger")
+            return redirect(url_for('employee_login'))
+        
+        # Fetch the latest delivery agent data from the database
+        agent = DeliveryAgent.query.get(current_user.id)
+        print("Loaded agent:", agent)
+        return render_template('delivery_agent/profile.html', user=agent)
     
     @app.route('/delivery-partner/order-detail')
     def delivery_partner_order_detail():
         return render_template('delivery_agent/order_detail.html', user=current_user)
 
+    @app.route('/delivery_agent/<int:agent_id>/edit', methods=['POST'])
+    def edit_delivery_agent(agent_id):
+        # Get the delivery agent or return 404 if not found.
+        agent = DeliveryAgent.query.get_or_404(agent_id)
+        
+        # Update text fields with submitted values or fallback to existing ones.
+        agent.username = request.form.get('username', agent.username)
+        agent.email = request.form.get('email', agent.email)
+        
+        phone = request.form.get('phone')
+        if phone:
+            try:
+                agent.phone = int(phone)
+            except ValueError:
+                flash("Invalid phone number.", "danger")
+                return redirect(url_for('delivery_partner_profile'))
+        agent.delivery_area = request.form.get('delivery_area', agent.delivery_area)
+        agent.id_proof = request.form.get('id_proof', agent.id_proof)
+        agent.bio = request.form.get('bio', agent.bio)
+        
+        # Update checkbox field.
+        agent.available_slots = True if request.form.get('available_slots') == 'on' else False
 
+        # Handle file upload.
+        file = request.files.get('image')
+        if  file and file.filename:
+            filename = secure_filename(file.filename)
+            # Save the file to the upload folder
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            # Construct the relative path to store in the database
+            relative_path = os.path.join('uploads', filename).replace(os.sep, '/')
+            agent.image = relative_path
+
+
+        try:
+            db.session.commit()
+            flash("Delivery agent details updated successfully.", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error updating details: {e}", "danger")
+        
+        # Redirect to the profile page which fetches the latest data.
+        return redirect(url_for('delivery_partner_profile'))
+
+
+
+    
+    
 # Customer routes
 def customer_routes(app, db):
     @app.route('/user/profile')

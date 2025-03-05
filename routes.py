@@ -542,9 +542,9 @@ def delivery_agent_routes(app, db):
                 Order.created_at.label("order_date"),
             )
             .join(Customer, Order.user_id == Customer.id)
-            .outerjoin(Address, Address.customer_id == Customer.id)  # Join Address if available
-            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Pending")  # Show only assigned orders
-            .distinct()  # ✅ Ensures only unique rows
+            .outerjoin(Address, Address.customer_id == Customer.id)
+            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Pending")
+            .group_by(Order.id, Customer.username, Customer.phone, Order.status, Order.total_price, Order.delivery_location, Order.created_at)
             .all()
         
         )

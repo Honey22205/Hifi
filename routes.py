@@ -595,7 +595,7 @@ def delivery_agent_routes(app, db):
         if not order:
             return "Order not found", 404
 
-        return render_template("delivery_agent/order_detail.html", user=current_user, order=order)
+        return render_template("delivery_agent/order_detail.html", user=current_user, orders=order)
 
 
 

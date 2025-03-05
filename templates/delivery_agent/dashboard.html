@@ -51,7 +51,7 @@
         <td>Butter Naan & Chicken Curry</td>
         <td>{{ order.delivery_location }}</td>
         <td>{{ order.order_status }}</td>
-        <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
+        <td><a href="{{url_for('delivery_partner_order_detail',order_id=order.order_id)}}">Details</a></td>
       </tr>
       {% endfor %}
       

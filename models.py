@@ -17,13 +17,7 @@ class Customer(UserMixin, db.Model):
     orders = db.relationship("Order", back_populates="user", foreign_keys="Order.user_id")  # Orders placed by the user
 
 
-    # @staticmethod
-    # def generate_id():
-    #     """Generate an ID starting from '001'."""
-    #     last_customer = db.session.query(func.max(db.cast(Customer.id, db.Integer))).scalar()
-    #     next_id = int(last_customer) + 1 if last_customer else 1
-    #     return f"{next_id:03}"  # Converts to '001', '002', etc.
-
+  
     
     def __repr__(self):
         return f'<Customer {self.username}>'

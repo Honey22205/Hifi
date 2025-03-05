@@ -548,7 +548,7 @@ def delivery_agent_routes(app, db):
             .all()
         
         )
-        print(orders)
+        # print(orders)
         return render_template('delivery_agent/dashboard.html', user=agent,orders=orders)  
     
 
@@ -571,17 +571,13 @@ def delivery_agent_routes(app, db):
 
 
 
-    @app.route('/delivery-partner/order-detail')
-    def delivery_partner_order_detail():
+    @app.route('/delivery-partner/order-detail/<int:order_id>')
+    def delivery_partner_order_detail(order_id):
+        """Fetch a specific order based on order_id"""
 
-        # if not current_user.is_authenticated or current_user.__tablename__ != "delivery_agent":
-        #     return "Unauthorized Access", 403  # Restrict access
-
-        # Fetch orders assigned to the logged-in delivery agent
-        orders = (
+        order = (
             db.session.query(
                 Order.id.label("order_id"),
-                Customer.id.label("customer_id"),
                 Customer.username.label("customer_name"),
                 Customer.phone.label("customer_phone"),
                 Address.address_line.label("customer_address"),
@@ -592,14 +588,16 @@ def delivery_agent_routes(app, db):
             )
             .join(Customer, Order.user_id == Customer.id)
             .outerjoin(Address, Address.customer_id == Customer.id)  # Join Address if available
-            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Pending")  # Show only assigned orders
-            .all()
+            .filter(Order.delivery_agent_id == current_user.id, Order.id == order_id)  # Filter by order_id
+            .first()  # Fetch only one order
         )
-        print(orders)
 
-        return render_template('delivery_agent/order_detail.html', user=current_user, orders=orders)
+        if not order:
+            return "Order not found", 404
 
-        # return render_template('delivery_agent/order_detail.html', user=current_user)
+        return render_template("delivery_agent/order_detail.html", user=current_user, order=order)
+
+
 
 
 

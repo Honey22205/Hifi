@@ -3,7 +3,7 @@ import secrets
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
 from sqlalchemy import or_
-from models import Customer, Admin, DeliveryAgent, Address
+from models import Customer, Admin, DeliveryAgent, Address, Order
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 
@@ -227,7 +227,7 @@ def register_routes(app, db, bcrypt, mail):
                     if bcrypt.check_password_hash(delivery_agent.password, password):
                         login_user(delivery_agent)
                         db.session.refresh(current_user)
-                        return redirect(url_for('delivery_agent', user=delivery_agent))
+                        return redirect(url_for('delivery_agent'))
                     else:
                         flash('Invalid username or password')
                         return render_template('employee_login.html', message='Invalid username or password')
@@ -435,7 +435,8 @@ def admin_routes(app, db):
 def delivery_agent_routes(app, db):
     @app.route('/delivery-agent')
     def delivery_agent():
-        return render_template('delivery_agent/dashboard.html', user=current_user)  
+        agent = DeliveryAgent.query.get(current_user.id)
+        return render_template('delivery_agent/dashboard.html', user=agent)  
     
     @app.route('/delivery-partner/profile')
     def delivery_partner_profile():

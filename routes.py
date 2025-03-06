@@ -4,7 +4,7 @@ import secrets
 from zoneinfo import ZoneInfo
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from models import Customer, Admin, DeliveryAgent, Address, Order, OrderItem, MenuItem
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
@@ -534,25 +534,34 @@ def delivery_agent_routes(app, db):
         # Get the delivery agent using the current user's ID
         agent = DeliveryAgent.query.get(current_user.id)
         
-        # Query pending (recent) orders without duplicates
+        # Create a subquery that selects one address per customer
+        address_subquery = (
+            db.session.query(
+                Address.customer_id,
+                func.min(Address.address_line).label("customer_address")
+            )
+            .group_by(Address.customer_id)
+            .subquery()
+        )
+
         pending_orders = (
             db.session.query(
                 Order.id.label("order_id"),
                 Customer.id.label("customer_id"),
                 Customer.username.label("customer_name"),
                 Customer.phone.label("customer_phone"),
-                Address.address_line.label("customer_address"),
+                address_subquery.c.customer_address,
                 Order.status.label("order_status"),
                 Order.total_price.label("order_total"),
                 Order.delivery_location.label("delivery_location"),
                 Order.created_at.label("order_date"),
             )
             .join(Customer, Order.user_id == Customer.id)
-            .outerjoin(Address, Address.customer_id == Customer.id)
+            .outerjoin(address_subquery, address_subquery.c.customer_id == Customer.id)
             .filter(Order.delivery_agent_id == current_user.id, Order.status == "Pending")
-            .distinct(Order.id)
             .all()
         )
+
         
         # Query assigned orders (orders with status "Accepted")
         assigned_orders = (
@@ -621,6 +630,8 @@ def delivery_agent_routes(app, db):
             .filter(Order.delivery_agent_id == current_user.id, Order.status == "Completed")
             .count()
         )
+        
+        print(pending_orders)
         
         # Pass all the data to the template
         return render_template(

@@ -204,3 +204,48 @@ h1 {
         width: 100%;
     }
 }
+
+.phone-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.phone-actions {
+    display: flex;
+    gap: 10px;
+    /* Optional: adjust margin to create spacing between number and buttons */
+    margin-left: auto;
+}
+
+/* Optional: If you still face issues with icons, try adding this: */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+  
+  .phone-actions .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .btn-call {
+    background-color: #2ecc71; /* Success/green */
+  }
+  
+  .btn-text {
+    background-color: #ee4b4b; /* Primary/red */
+  }
+  
+  .btn-call:hover {
+    background-color: #27ae60; /* Darker green on hover */
+
+  } 
+  
+  .btn-text:hover {
+    background-color: #c0392b; /* Darker red on hover */
+  }

@@ -193,4 +193,20 @@ body {
      border-radius: 5px;
    }
 
-   
+   .status-value.pending {
+    color: orange;
+  }
+  
+  .status-value.completed {
+    color: green;
+  }
+  
+  .status-value.in-progress {
+    color: blue;
+  }
+  
+  /* Optional: a default style */
+  .status-value {
+    font-weight: bold;
+  }
+  

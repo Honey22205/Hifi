@@ -1,23 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const orderData = {
-        orderId: 'HF12345',
-        orderTime: '2025-03-04 14:30',
-        status: 'Ordered',
-        estimatedDelivery: '30:00',
-        customer: {
-            name: 'Swastika gond',
-            phone: '+1 (555) 123-4567',
-            address: 'BIET,Jhansi'
-        },
-        items: [
-            { name: 'HiFi Signature Burger', quantity: 2, price: 15.99 },
-            { name: 'Truffle Parmesan Fries', quantity: 1, price: 7.99 },
-            { name: 'Artisanal Lemonade', quantity: 2, price: 4.99 },
-            { name: 'Gourmet Chocolate Brownie', quantity: 1, price: 6.99 }
-        ],
-        deliveryFee: 2.99,
-        taxRate: 0.08
-    };
+    
 
     // Populate order details
     document.getElementById('orderStatus').textContent = orderData.status;

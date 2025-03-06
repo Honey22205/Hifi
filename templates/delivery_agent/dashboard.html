@@ -29,6 +29,7 @@
 </section>
 <section class="recent-orders">
   <h2>Pending Deliveries</h2>
+  {% if orders %}
   <table>
     <thead>
       <tr>
@@ -42,26 +43,23 @@
       </tr>
     </thead>
     <tbody>
+      {% for order in orders %}
       <tr>
-        <td>12347</td>
-        <td>2025-03-04 02:00 PM</td>
-        <td>Amit Singh, 9876543212</td>
+        <td>{{ order.order_id }}</td>
+        <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ order.customer_name }}</td>
         <td>Butter Naan & Chicken Curry</td>
-        <td>Bandra West, Mumbai</td>
-        <td class="pending">Out for Delivery</td>
-        <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
+        <td>{{ order.delivery_location }}</td>
+        <td>{{ order.order_status }}</td>
+        <td><a href="{{url_for('delivery_partner_order_detail',order_id=order.order_id)}}">Details</a></td>
       </tr>
-      <tr>
-        <td>12348</td>
-        <td>2025-03-04 02:30 PM</td>
-        <td>Sneha Rao, 9876543213</td>
-        <td>Veg Thali</td>
-        <td>Andheri East, Mumbai</td>
-        <td class="pending">Pending Pickup</td>
-        <td><a href="{{url_for('delivery_partner_order_detail')}}">Details</a></td>
-      </tr>
+      {% endfor %}
+      
     </tbody>
   </table>
+  {% else %}
+    <p>No orders assigned to you.</p>
+    {% endif %}
 </section>
 <section class="recent-orders">
   <h2>Completed Deliveries</h2>

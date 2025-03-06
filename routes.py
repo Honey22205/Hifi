@@ -1,11 +1,14 @@
+import datetime
 import os
 import secrets
+from zoneinfo import ZoneInfo
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
 from sqlalchemy import or_
-from models import Customer, Admin, DeliveryAgent, Address, Order
+from models import Customer, Admin, DeliveryAgent, Address, Order, OrderItem, MenuItem
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
+from sqlalchemy.orm import joinedload
 
 def register_routes(app, db, bcrypt, mail):
     @app.route('/')
@@ -528,8 +531,11 @@ def customer_routes(app, db):
 def delivery_agent_routes(app, db):
     @app.route('/delivery-agent')
     def delivery_agent():
+        # Get the delivery agent using the current user's ID
         agent = DeliveryAgent.query.get(current_user.id)
-        orders = (
+        
+        # Query pending (recent) orders without duplicates
+        pending_orders = (
             db.session.query(
                 Order.id.label("order_id"),
                 Customer.id.label("customer_id"),
@@ -544,12 +550,89 @@ def delivery_agent_routes(app, db):
             .join(Customer, Order.user_id == Customer.id)
             .outerjoin(Address, Address.customer_id == Customer.id)
             .filter(Order.delivery_agent_id == current_user.id, Order.status == "Pending")
-            .group_by(Order.id, Customer.username, Customer.phone, Order.status, Order.total_price, Order.delivery_location, Order.created_at)
+            .distinct(Order.id)
             .all()
-        
         )
-        # print(orders)
-        return render_template('delivery_agent/dashboard.html', user=agent,orders=orders)  
+        
+        # Query assigned orders (orders with status "Accepted")
+        assigned_orders = (
+            db.session.query(
+                Order.id.label("order_id"),
+                Customer.id.label("customer_id"),
+                Customer.username.label("customer_name"),
+                Customer.phone.label("customer_phone"),
+                Address.address_line.label("customer_address"),
+                Order.status.label("order_status"),
+                Order.total_price.label("order_total"),
+                Order.delivery_location.label("delivery_location"),
+                Order.created_at.label("order_date"),
+            )
+            .join(Customer, Order.user_id == Customer.id)
+            .outerjoin(Address, Address.customer_id == Customer.id)
+            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Accepted")
+            .distinct(Order.id)
+            .all()
+        )
+        
+        # Query completed orders
+        completed_orders = (
+            db.session.query(
+                Order.id.label("order_id"),
+                Customer.id.label("customer_id"),
+                Customer.username.label("customer_name"),
+                Customer.phone.label("customer_phone"),
+                Address.address_line.label("customer_address"),
+                Order.status.label("order_status"),
+                Order.total_price.label("order_total"),
+                Order.delivery_location.label("delivery_location"),
+                Order.created_at.label("order_date"),
+            )
+            .join(Customer, Order.user_id == Customer.id)
+            .outerjoin(Address, Address.customer_id == Customer.id)
+            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Completed")
+            .distinct(Order.id)
+            .all()
+        )
+        
+        # Define today's date using Indian Standard Time (IST)
+        today = datetime.datetime.now()
+        
+        # Count today's delivered orders (assuming 'Delivered' status marks a completed delivery)
+        todays_deliveries_count = (
+            db.session.query(Order)
+            .filter(
+                Order.delivery_agent_id == current_user.id,
+                db.func.date(Order.created_at) == today,
+                Order.status == "Delivered"  # Adjust if your status differs
+            )
+            .count()
+        )
+        
+        # Count total pending orders for the delivery agent
+        pending_count = (
+            db.session.query(Order)
+            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Pending")
+            .count()
+        )
+        
+        # Count total completed orders for the delivery agent
+        completed_count = (
+            db.session.query(Order)
+            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Completed")
+            .count()
+        )
+        
+        # Pass all the data to the template
+        return render_template(
+            'delivery_agent/dashboard.html',
+            user=agent,
+            pending_orders=pending_orders,
+            assigned_orders=assigned_orders,
+            completed_orders=completed_orders,
+            todays_deliveries_count=todays_deliveries_count,
+            pending_count=pending_count,
+            completed_count=completed_count
+        )
     
 
 
@@ -573,32 +656,25 @@ def delivery_agent_routes(app, db):
 
     @app.route('/delivery-partner/order-detail/<int:order_id>')
     def delivery_partner_order_detail(order_id):
-        """Fetch a specific order based on order_id"""
-
+        """Fetch detailed order information along with order items and customer details."""
+        
         order = (
-            db.session.query(
-                Order.id.label("order_id"),
-                Customer.username.label("customer_name"),
-                Customer.phone.label("customer_phone"),
-                Address.address_line.label("customer_address"),
-                Order.status.label("order_status"),
-                Order.total_price.label("order_total"),
-                Order.delivery_location.label("delivery_location"),
-                Order.created_at.label("order_date"),
+            db.session.query(Order)
+            .options(
+                joinedload(Order.user).joinedload(Customer.addresses),  # Load customer's addresses
+                joinedload(Order.items).joinedload(OrderItem.menu_item)  # Load each order item's menu details
             )
-            .join(Customer, Order.user_id == Customer.id)
-            .outerjoin(Address, Address.customer_id == Customer.id)  # Join Address if available
-            .filter(Order.delivery_agent_id == current_user.id, Order.id == order_id)  # Filter by order_id
-            .first()  # Fetch only one order
+            .filter(
+                Order.delivery_agent_id == current_user.id,
+                Order.id == order_id
+            )
+            .first()
         )
-
+        
         if not order:
             return "Order not found", 404
-
-        return render_template("delivery_agent/order_detail.html", user=current_user, orders=order)
-
-
-
+        
+        return render_template("delivery_agent/order_detail.html", user=current_user, order=order)
 
 
 

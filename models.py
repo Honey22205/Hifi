@@ -109,6 +109,8 @@ class OrderItem(db.Model):
     menu_item_id = db.Column(db.Integer, db.ForeignKey('menu_item.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    
+    menu_item = db.relationship("MenuItem", backref="order_items")
 
     def __repr__(self):
         return f'<OrderItem {self.id}, Order: {self.order_id}, Item: {self.menu_item_id}>'

@@ -4,7 +4,7 @@
     --success-color: #2ecc71;
     --warning-color: #f39c12;
     --text-color: #333333;
-    --bg-color: #f8f8f8;
+    --bg-color: #f0fff0;
     --card-bg: #ffffff;
     --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
@@ -17,7 +17,8 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: url('img.jpg') no-repeat center center/cover;
+    /* background: url('img.jpg') no-repeat center center/cover; */
+    background: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
 }

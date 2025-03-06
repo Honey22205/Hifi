@@ -579,7 +579,7 @@ def delivery_agent_routes(app, db):
             .join(Customer, Order.user_id == Customer.id)
             .outerjoin(Address, Address.customer_id == Customer.id)
             .filter(Order.delivery_agent_id == current_user.id, Order.status == "Accepted")
-            .distinct(Order.id)
+            .group_by(Order.id, Customer.id)
             .all()
         )
         

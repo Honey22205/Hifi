@@ -104,12 +104,24 @@
   </section>
 
   <section class="delivery-actions card">
-    <button id="acceptBtn" class="btn btn-primary">Accept Order</button>
-    <button id="completeBtn" class="btn btn-success" disabled>
-      Complete Delivery
-    </button>
+    <h2>Manage Order</h2>
+
+    <!-- Accept Order Form -->
+    <form action="/order/{{ order.id }}/accept" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit" class="btn btn-primary">Accept Order</button>
+  </form>
+  
+  <form action="/order/{{ order.id }}/decline" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit" class="btn btn-danger">Decline Order</button>
+  </form>
+  
   </section>
+
+  
 </main>
 {% endblock content %} {% block script %}
 <script src="/js/delivery_agent/order_detail.js"></script>
 {% endblock %}
+

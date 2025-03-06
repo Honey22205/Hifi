@@ -76,4 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(timerInterval);
         document.getElementById('estimatedDelivery').textContent = "Delivered";
     }
+
+    
 });

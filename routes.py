@@ -689,6 +689,42 @@ def delivery_agent_routes(app, db):
 
 
 
+    @app.route('/order/<int:order_id>/accept', methods=['POST'])
+    @login_required
+    def accept_order(order_id):
+        order = Order.query.get_or_404(order_id)
+        
+        # Ensure order is pending and not already assigned
+        if order.status != "Pending":
+            return jsonify({"error": "Order Already Accepted."}), 400
+        
+        order.status = "Accepted"
+        order.delivery_agent_id = current_user.id  # Assign to the logged-in delivery agent
+        db.session.commit()
+        
+        # return render_template("delivery_agent/order_detail.html")
+        return jsonify({"message": "Order accepted successfully."})
+
+    @app.route('/order/<int:order_id>/decline', methods=['POST'])
+    @login_required
+    def decline_order(order_id):
+        order = Order.query.get_or_404(order_id)
+        
+        # Ensure order is pending before declining
+        if order.status != "Pending":
+            return jsonify({"error": "Order Already declined."}), 400
+        
+        order.status = "Declined"
+        db.session.commit()
+        
+        return jsonify({"message": "Order declined successfully."})
+
+
+
+    
+
+
+
     @app.route('/delivery_agent/<int:agent_id>/edit', methods=['POST'])
     def edit_delivery_agent(agent_id):
         # Get the delivery agent or return 404 if not found.
@@ -733,7 +769,5 @@ def delivery_agent_routes(app, db):
         
         # Redirect to the profile page which fetches the latest data.
         return redirect(url_for('delivery_partner_profile'))
-
-
-
+    
     

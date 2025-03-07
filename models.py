@@ -93,6 +93,8 @@ class Order(db.Model):
     delivery_location = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=func.now())
     delivered_at = db.Column(db.DateTime, nullable=True)
+
+    delivery_status = db.Column(db.String(50),nullable=False, default="ActionPending")
     
     items = db.relationship("OrderItem", backref="order", lazy=True)
     user = db.relationship("Customer", back_populates="orders", foreign_keys=[user_id])  # Link to the user

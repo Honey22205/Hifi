@@ -591,14 +591,14 @@ def delivery_agent_routes(app, db):
                 Customer.username.label("customer_name"),
                 Customer.phone.label("customer_phone"),
                 Address.address_line.label("customer_address"),
-                Order.status.label("order_status"),
+                Order.delivery_status.label("order_status"),
                 Order.total_price.label("order_total"),
                 Order.delivery_location.label("delivery_location"),
                 Order.created_at.label("order_date"),
             )
             .join(Customer, Order.user_id == Customer.id)
             .outerjoin(Address, Address.customer_id == Customer.id)
-            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Completed")
+            .filter(Order.delivery_agent_id == current_user.id, Order.delivery_status == "Delivered")
             .group_by(Order.id, Customer.id)
             .all()
         )
@@ -627,7 +627,7 @@ def delivery_agent_routes(app, db):
         # Count total completed orders for the delivery agent
         completed_count = (
             db.session.query(Order)
-            .filter(Order.delivery_agent_id == current_user.id, Order.status == "Completed")
+            .filter(Order.delivery_agent_id == current_user.id, Order.delivery_status == "Delivered")
             .count()
         )
         
@@ -726,6 +726,22 @@ def delivery_agent_routes(app, db):
 
 
 
+    @app.route('/delivery_status/<int:order_id>/edit', methods=['POST'])
+    def edit_delivery_status(order_id):
+        order = Order.query.get_or_404(order_id)
+        
+        valid_statuses = ["Order Pickup", "On the Way", "Reached Destination", "Delivered" ]
+        new_status = request.form.get('delivery_status')
+        
+        if new_status in valid_statuses:
+            order.delivery_status = new_status
+            if new_status == "Delivered":
+                order.delivered_at = func.now()
+            db.session.commit()
+        else:
+            return "Invalid status update", 400
+        
+        return redirect(url_for('delivery_agent'))
     
 
 
@@ -886,21 +902,3 @@ def delivery_agent_routes(app, db):
 #         db.session.commit()
 #         return jsonify({"message": "Address added successfully!"}), 201
     
-
-#     @app.route("/address/<int:address_id>/set-preferred", methods=["POST"])
-#     @login_required
-#     def set_preferred_address(address_id):
-#         # Fetch the selected address
-#         address = Address.query.filter_by(id=address_id, customer_id=current_user.id).first()
-        
-#         if not address:
-#             return jsonify({"error": "Address not found"}), 404
-
-#         # Set all addresses to "not preferred"
-#         Address.query.filter_by(customer_id=current_user.id).update({"is_preferred": False})
-
-#         # Set the selected address as preferred
-#         address.is_preferred = True
-#         db.session.commit()
-
-#         return jsonify({"message": "Default address updated!"}), 200

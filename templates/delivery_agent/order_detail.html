@@ -104,24 +104,34 @@
   </section>
 
   <section class="delivery-actions card">
-    <h2>Manage Order</h2>
-
-    <!-- Accept Order Form -->
-    <form action="/order/{{ order.id }}/accept" method="POST">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <button type="submit" class="btn btn-primary">Accept Order</button>
-  </form>
-  
-  <form action="/order/{{ order.id }}/decline" method="POST">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <button type="submit" class="btn btn-danger">Decline Order</button>
-  </form>
-  
+    <div class="card-header">
+      <h2 class="mb-0">Manage Order</h2>
+    </div>
+    <div class="card-body">
+      <div class="button-row">
+        <!-- Accept Order Form -->
+        <div class="button-col">
+          <form action="/order/{{ order.id }}/accept" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <button type="submit" class="btn btn-success btn-block">
+              Accept
+            </button>
+          </form>
+        </div>
+        <!-- Decline Order Form -->
+        <div class="button-col">
+          <form action="/order/{{ order.id }}/decline" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <button type="submit" class="btn btn-danger btn-block">
+              Decline
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   </section>
-
   
 </main>
 {% endblock content %} {% block script %}
 <script src="/js/delivery_agent/order_detail.js"></script>
 {% endblock %}
-

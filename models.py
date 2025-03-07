@@ -126,3 +126,19 @@ class MenuItem(db.Model):
 
     def __repr__(self):
         return f'<MenuItem {self.name}, Price: {self.price}>'
+
+# Earnings Model
+class Earnings(db.Model):
+    __tablename__ = 'earnings'
+    id = db.Column(db.Integer, primary_key=True)
+    delivery_agent_id = db.Column(db.Integer, db.ForeignKey('delivery_agent.id'), nullable=False)
+    base_pay = db.Column(db.Float, nullable=False, default=0.0)
+    bonus = db.Column(db.Float, nullable=False, default=0.0)
+    trips_count = db.Column(db.Integer, nullable=False, default=0)
+    earned_at = db.Column(db.DateTime, default=func.now())
+    
+    # Relationship with DeliveryAgent
+    delivery_agent = db.relationship('DeliveryAgent', backref='earnings')
+    
+    def __repr__(self):
+        return f'<Earnings {self.delivery_agent_id} - {self.earned_at}>'

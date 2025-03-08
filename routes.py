@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
 from sqlalchemy import func, or_
-from models import Customer, Admin, DeliveryAgent, Address, Order, OrderItem, MenuItem
+from models import Customer, Admin, DeliveryAgent, Address, Earnings, Order, OrderItem, MenuItem
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
@@ -631,7 +631,23 @@ def delivery_agent_routes(app, db):
             .count()
         )
         
-        print(pending_orders)
+        # Query to get today's earnings (sum of each field)
+        today_earnings = db.session.query(
+            func.coalesce(func.sum(Earnings.base_pay), 0).label("base_pay"),
+            func.coalesce(func.sum(Earnings.bonus), 0).label("bonus"),
+            # func.coalesce(func.sum(Earnings.trips_count), 0).label("trips"),
+            func.count(Earnings.id).label("delivery_count")
+        ).filter(
+            Earnings.delivery_agent_id == current_user.id,
+            func.date(Earnings.earned_at) == func.date(func.now())
+        ).first()
+
+        # Query to get the most recent earnings record
+        recent_earning = Earnings.query.filter(
+            Earnings.delivery_agent_id == current_user.id
+        ).order_by(Earnings.earned_at.desc()).first()
+            
+        print(today_earnings)
         
         # Pass all the data to the template
         return render_template(
@@ -643,7 +659,9 @@ def delivery_agent_routes(app, db):
             todays_deliveries_count=todays_deliveries_count,
             pending_count=pending_count,
             completed_count=completed_count,
-            timedelta=datetime.timedelta
+            timedelta=datetime.timedelta,
+            earnings=today_earnings,
+            recent_earnings=recent_earning
         )
     
 
@@ -794,112 +812,112 @@ def delivery_agent_routes(app, db):
     
     
     
-#     @app.route('/api/orders/<int:order_id>/complete', methods=['POST'])
-#     @login_required
-#     def complete_order(order_id):
-#         order = Order.query.get_or_404(order_id)
-#         order.status = 'Completed'
-#         order.delivered_at = func.now()
+    @app.route('/api/orders/<int:order_id>/complete', methods=['POST'])
+    @login_required
+    def complete_order(order_id):
+        order = Order.query.get_or_404(order_id)
+        order.status = 'Completed'
+        order.delivered_at = func.now()
         
-#         # Update or create earnings record for today
-#         today_earnings = Earnings.query.filter(
-#             Earnings.delivery_agent_id == current_user.id,
-#             func.date(Earnings.earned_at) == func.date(func.now())
-#         ).first()
+        # Update or create earnings record for today
+        today_earnings = Earnings.query.filter(
+            Earnings.delivery_agent_id == current_user.id,
+            func.date(Earnings.earned_at) == func.date(func.now())
+        ).first()
         
-#         base_pay_per_delivery = 50.0
+        base_pay_per_delivery = 50.0
         
-#         if today_earnings:
-#             # Add base pay for this delivery
-#             today_earnings.base_pay += base_pay_per_delivery
-#             today_earnings.trips_count += 1
-#             # Add bonus for every 5 trips
-#             if today_earnings.trips_count % 5 == 0:
-#                 today_earnings.bonus += 100.0
-#         else:
-#             # Get previous earnings to carry forward
-#             previous_earnings = Earnings.query.filter(
-#                 Earnings.delivery_agent_id == current_user.id,
-#                 func.date(Earnings.earned_at) < func.date(func.now())
-#             ).order_by(Earnings.earned_at.desc()).first()
+        if today_earnings:
+            # Add base pay for this delivery
+            today_earnings.base_pay += base_pay_per_delivery
+            today_earnings.trips_count += 1
+            # Add bonus for every 5 trips
+            if today_earnings.trips_count % 5 == 0:
+                today_earnings.bonus += 100.0
+        else:
+            # Get previous earnings to carry forward
+            previous_earnings = Earnings.query.filter(
+                Earnings.delivery_agent_id == current_user.id,
+                func.date(Earnings.earned_at) < func.date(func.now())
+            ).order_by(Earnings.earned_at.desc()).first()
             
-#             initial_base_pay = previous_earnings.base_pay if previous_earnings else 0.0
-#             initial_bonus = previous_earnings.bonus if previous_earnings else 0.0
+            initial_base_pay = previous_earnings.base_pay if previous_earnings else 0.0
+            initial_bonus = previous_earnings.bonus if previous_earnings else 0.0
             
-#             today_earnings = Earnings(
-#                 delivery_agent_id=current_user.id,
-#                 base_pay=initial_base_pay + base_pay_per_delivery,
-#                 bonus=initial_bonus,
-#                 trips_count=1
-#             )
-#             db.session.add(today_earnings)
+            today_earnings = Earnings(
+                delivery_agent_id=current_user.id,
+                base_pay=initial_base_pay + base_pay_per_delivery,
+                bonus=initial_bonus,
+                trips_count=1
+            )
+            db.session.add(today_earnings)
         
-#         db.session.commit()
-#         return jsonify({'message': 'Order completed successfully', 'earnings': {
-#             'base_pay': today_earnings.base_pay,
-#             'bonus': today_earnings.bonus,
-#             'trips_count': today_earnings.trips_count,
-#             'total': today_earnings.base_pay + today_earnings.bonus
-#         }})
+        db.session.commit()
+        return jsonify({'message': 'Order completed successfully', 'earnings': {
+            'base_pay': today_earnings.base_pay,
+            'bonus': today_earnings.bonus,
+            'trips_count': today_earnings.trips_count,
+            'total': today_earnings.base_pay + today_earnings.bonus
+        }})
 
-#     @app.route('/api/delivery-agent/earnings')
-#     @login_required
-#     def get_current_earnings():
-#         today_earnings = Earnings.query.filter(
-#             Earnings.delivery_agent_id == current_user.id,
-#             func.date(Earnings.earned_at) == func.date(func.now())
-#         ).first()
+    @app.route('/api/delivery-agent/earnings')
+    @login_required
+    def get_current_earnings():
+        today_earnings = Earnings.query.filter(
+            Earnings.delivery_agent_id == current_user.id,
+            func.date(Earnings.earned_at) == func.date(func.now())
+        ).first()
 
-#         if not today_earnings:
-#             return jsonify({
-#                 'base_pay': 0.0,
-#                 'bonus': 0.0,
-#                 'trips_count': 0
-#             })
+        if not today_earnings:
+            return jsonify({
+                'base_pay': 0.0,
+                'bonus': 0.0,
+                'trips_count': 0
+            })
 
-#         return jsonify({
-#             'base_pay': today_earnings.base_pay,
-#             'bonus': today_earnings.bonus,
-#             'trips_count': today_earnings.trips_count
-#         })
+        return jsonify({
+            'base_pay': today_earnings.base_pay,
+            'bonus': today_earnings.bonus,
+            'trips_count': today_earnings.trips_count
+        })
     
-#     @app.route('/delivery-agent/earnings/<int:agent_id>')
-#     @login_required
-#     def get_agent_earnings(agent_id):
-#         # Query earnings for the specific delivery agent
-#         earnings = Earnings.query.filter_by(delivery_agent_id=agent_id).all()
+    # @app.route('/delivery-agent/earnings/<int:agent_id>')
+    # @login_required
+    # def get_agent_earnings(agent_id):
+    #     # Query earnings for the specific delivery agent
+    #     earnings = Earnings.query.filter_by(delivery_agent_id=agent_id).all()
         
-#         # Format the earnings data
-#         earnings_data = [{
-#             'base_pay': earning.base_pay,
-#             'bonus': earning.bonus,
-#             'trips_count': earning.trips_count,
-#             'earned_at': earning.earned_at.strftime('%Y-%m-%d %H:%M:%S'),
-#             'total': earning.base_pay + earning.bonus
-#         } for earning in earnings]
+    #     # Format the earnings data
+    #     earnings_data = [{
+    #         'base_pay': earning.base_pay,
+    #         'bonus': earning.bonus,
+    #         'trips_count': earning.trips_count,
+    #         'earned_at': earning.earned_at.strftime('%Y-%m-%d %H:%M:%S'),
+    #         'total': earning.base_pay + earning.bonus
+    #     } for earning in earnings]
         
-#         return jsonify(earnings_data)
+    #     return jsonify(earnings_data)
 
 
-# # Customer routes
-# def customer_routes(app, db):
-#     @app.route('/user/profile')
-#     @login_required
-#     def customer():
-#         return render_template('user/profile.html', user=current_user)
+# Customer routes
+def customer_routes(app, db):
+    @app.route('/user/profile')
+    @login_required
+    def customer():
+        return render_template('user/profile.html', user=current_user)
 
-#     @app.route("/address/new", methods=["POST"])
-#     @login_required
-#     def add_address():
-#         data = request.get_json()
-#         new_address = Address(
-#             address_line=data.get("address_line"),
-#             city=data.get("city"),
-#             state=data.get("state"),
-#             zip_code=data.get("zip_code"),
-#             customer_id=current_user.id
-#         )
-#         db.session.add(new_address)
-#         db.session.commit()
-#         return jsonify({"message": "Address added successfully!"}), 201
+    @app.route("/address/new", methods=["POST"])
+    @login_required
+    def add_address():
+        data = request.get_json()
+        new_address = Address(
+            address_line=data.get("address_line"),
+            city=data.get("city"),
+            state=data.get("state"),
+            zip_code=data.get("zip_code"),
+            customer_id=current_user.id
+        )
+        db.session.add(new_address)
+        db.session.commit()
+        return jsonify({"message": "Address added successfully!"}), 201
     

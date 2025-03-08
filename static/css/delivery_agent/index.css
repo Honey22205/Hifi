@@ -10,7 +10,7 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 250px;  /* Increased width so title displays properly */
+    width: 300px;  /* Increased width so title displays properly */
     height: 100vh;
     background: linear-gradient(180deg, #0b3d1e, #156425, #1e8e3e);
     padding: 20px;

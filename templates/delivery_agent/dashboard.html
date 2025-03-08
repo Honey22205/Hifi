@@ -4,7 +4,7 @@
   <h1>Delivery Partner Dashboard</h1>
   <div class="admin-card">
     <img
-      src="https://img.lovepik.com/element/45001/3052.png_860.png"
+      src="{{url_for('static', filename=user.image) or 'https://img.lovepik.com/element/45001/3052.png_860.png'}}"
       alt="Profile"
       class="profile-image"
     />
@@ -30,7 +30,15 @@
   </div>
 </section>
 
-<section class="recent-orders">
+<!-- Tabs Header -->
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'recent')" id="defaultOpen">Recent Orders</button>
+  <button class="tablinks" onclick="openTab(event, 'assigned')">Assigned Deliveries</button>
+  <button class="tablinks" onclick="openTab(event, 'completed')">Completed Deliveries</button>
+</div>
+
+<!-- Tab Content: Recent Orders -->
+<div id="recent" class="tabcontent">
   <h2>Recent Orders</h2>
   {% if pending_orders %}
   <table>
@@ -54,23 +62,17 @@
           {{ order.customer_phone }}
         </td>
         <td>{{ order.delivery_location }}</td>
-        <td>{% if order.order_status == "Pending" %}
-            <span class="status-value pending" id="orderStatus"
-              >{{ order.order_status }}</span
-            >
-            {% elif order.order_status == "Completed" %}
-            <span class="status-value completed" id="orderStatus"
-              >{{ order.order_status }}</span
-            >
-            {% elif order.order_status == "In Progress" %}
-            <span class="status-value in-progress" id="orderStatus"
-              >{{ order.order_status }}</span
-            >
-            {% else %}
-            <span class="status-value" id="orderStatus"
-              >{{ order.order_status }}</span
-            >
-            {% endif %}</td>
+        <td>
+          {% if order.order_status == "Pending" %}
+            <span class="status-value pending">{{ order.order_status }}</span>
+          {% elif order.order_status == "Completed" %}
+            <span class="status-value completed">{{ order.order_status }}</span>
+          {% elif order.order_status == "In Progress" %}
+            <span class="status-value in-progress">{{ order.order_status }}</span>
+          {% else %}
+            <span class="status-value">{{ order.order_status }}</span>
+          {% endif %}
+        </td>
         <td>
           <a href="{{ url_for('delivery_partner_order_detail', order_id=order.order_id) }}">Details</a>
         </td>
@@ -81,9 +83,10 @@
   {% else %}
     <p>No pending orders assigned to you.</p>
   {% endif %}
-</section>
+</div>
 
-<section class="recent-orders">
+<!-- Tab Content: Assigned Deliveries -->
+<div id="assigned" class="tabcontent">
   <h2>Assigned Deliveries</h2>
   {% if assigned_orders %}
   <table>
@@ -101,13 +104,13 @@
       {% for order in assigned_orders %}
       <tr>
         <td>OD{{ order.order_id }}</td>
-        <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ (order.order_date + timedelta(minutes=30)).strftime('%Y-%m-%d %H:%M:%S') }}</td>
         <td>
           {{ order.customer_name }}<br />
           {{ order.customer_phone }}
         </td>
         <td>{{ order.delivery_location }}</td>
-        <td>{{ order.order_status }}</td>
+        <td style="color: green;">{{ order.order_status }}</td>
         <td>
           <a href="{{ url_for('delivery_partner_order_detail', order_id=order.order_id) }}">Details</a>
         </td>
@@ -118,9 +121,10 @@
   {% else %}
     <p>No assigned orders.</p>
   {% endif %}
-</section>
+</div>
 
-<section class="recent-orders">
+<!-- Tab Content: Completed Deliveries -->
+<div id="completed" class="tabcontent">
   <h2>Completed Deliveries</h2>
   {% if completed_orders %}
   <table>
@@ -144,7 +148,7 @@
           {{ order.customer_phone }}
         </td>
         <td>{{ order.delivery_location }}</td>
-        <td>{{ order.order_status }}</td>
+        <td style="color: blue;">{{ order.order_status }}</td>
         <td>
           <a href="{{ url_for('delivery_partner_order_detail', order_id=order.order_id) }}">Details</a>
         </td>
@@ -155,8 +159,9 @@
   {% else %}
     <p>No completed orders.</p>
   {% endif %}
-</section>
+</div>
 
+<!-- Side Information -->
 <div class="side-info">
   <div class="side-card">
     <h3>Recent Updates</h3>
@@ -168,4 +173,24 @@
     <p>⭐ Ali Muhammad<br />Last seen 2 hours ago</p>
   </div>
 </div>
+
+<!-- JavaScript for Tabs -->
+<script>
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+// Open default tab on page load
+document.getElementById("defaultOpen").click();
+</script>
+
 {% endblock content %}

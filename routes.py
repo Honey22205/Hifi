@@ -642,7 +642,8 @@ def delivery_agent_routes(app, db):
             completed_orders=completed_orders,
             todays_deliveries_count=todays_deliveries_count,
             pending_count=pending_count,
-            completed_count=completed_count
+            completed_count=completed_count,
+            timedelta=datetime.timedelta
         )
     
 

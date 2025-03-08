@@ -726,7 +726,7 @@ def delivery_agent_routes(app, db):
         if not order:
             return "Order not found", 404
         
-        return render_template("delivery_agent/track_order.html", user=current_user, order=order)
+        return render_template("delivery_agent/order_detail.html", user=current_user, order=order)
 
 
 
@@ -741,6 +741,7 @@ def delivery_agent_routes(app, db):
             return redirect(url_for("delivery_agent"))
         
         order.status = "Accepted"
+        order.delivery_status = "Accepted"
         order.delivery_agent_id = current_user.id  # Assign to the logged-in delivery agent
         db.session.commit()
         
@@ -766,23 +767,23 @@ def delivery_agent_routes(app, db):
         return redirect(url_for("delivery_agent"))
 
 
-
-    @app.route('/delivery_status/<int:order_id>/edit', methods=['POST'])
+    @app.route('/api/orders/<int:order_id>/update_status', methods=['POST'])
     def edit_delivery_status(order_id):
         order = Order.query.get_or_404(order_id)
         
-        valid_statuses = ["Accepted", "Picked Up", "Out for Delivery", "Completed"]
+        valid_statuses = ["Accepted", "Picked Up", "Out for Delivery", "Delivered"]
         new_status = request.form.get('delivery_status')
         
         if new_status in valid_statuses:
             order.delivery_status = new_status
             if new_status == "Delivered":
+                order.status = "Delivered"
                 order.delivered_at = func.now()
             db.session.commit()
         else:
             return "Invalid status update", 400
         
-        return redirect(url_for('delivery_agent'))
+        return redirect(url_for('delivery_partner_order_detail', order_id=order_id))
     
 
 
@@ -834,81 +835,81 @@ def delivery_agent_routes(app, db):
     
     
     
-    @app.route('/api/orders/<int:order_id>/update_status', methods=['POST'])
-    @login_required
-    def update_order_status(order_id):
-        order = Order.query.get_or_404(order_id)
+    # @app.route('/api/orders/<int:order_id>/update_status', methods=['POST'])
+    # @login_required
+    # def update_order_status(order_id):
+    #     order = Order.query.get_or_404(order_id)
         
-        # Define the sequence of statuses
-        status_sequence = ["Accepted", "Picked Up", "Out for Delivery", "Completed"]
+    #     # Define the sequence of statuses
+    #     status_sequence = ["Accepted", "Picked Up", "Out for Delivery", "Completed"]
 
-        # Ensure the current delivery_status is one of the expected values
-        if order.delivery_status not in status_sequence:
-            return jsonify({'error': 'Invalid delivery status'}), 400
+    #     # Ensure the current delivery_status is one of the expected values
+    #     if order.delivery_status not in status_sequence:
+    #         return jsonify({'error': 'Invalid delivery status'}), 400
 
-        # If the order is already completed, no update is necessary
-        if order.delivery_status == "Completed":
-            return jsonify({'message': 'Order is already completed'}), 400
+    #     # If the order is already completed, no update is necessary
+    #     if order.delivery_status == "Completed":
+    #         return jsonify({'message': 'Order is already completed'}), 400
 
-        # Find the current index and move to the next status in the sequence
-        current_index = status_sequence.index(order.delivery_status)
-        next_index = current_index + 1
-        order.delivery_status = status_sequence[next_index]
+    #     # Find the current index and move to the next status in the sequence
+    #     current_index = status_sequence.index(order.delivery_status)
+    #     next_index = current_index + 1
+    #     order.delivery_status = status_sequence[next_index]
 
-        # When status reaches "Completed", update the main status, delivered_at, and earnings
-        if order.delivery_status == "Completed":
-            order.status = "Completed"
-            order.delivered_at = func.now()
+    #     # When status reaches "Completed", update the main status, delivered_at, and earnings
+    #     if order.delivery_status == "Completed":
+    #         order.status = "Completed"
+    #         order.delivered_at = func.now()
             
-            # Update or create earnings record for today
-            today_earnings = Earnings.query.filter(
-                Earnings.delivery_agent_id == current_user.id,
-                func.date(Earnings.earned_at) == func.date(func.now())
-            ).first()
+    #         # Update or create earnings record for today
+    #         today_earnings = Earnings.query.filter(
+    #             Earnings.delivery_agent_id == current_user.id,
+    #             func.date(Earnings.earned_at) == func.date(func.now())
+    #         ).first()
             
-            base_pay_per_delivery = 50.0
+    #         base_pay_per_delivery = 50.0
             
-            if today_earnings:
-                # Add base pay for this delivery
-                today_earnings.base_pay += base_pay_per_delivery
-                today_earnings.trips_count += 1
-                # Add bonus for every 5 trips
-                if today_earnings.trips_count % 5 == 0:
-                    today_earnings.bonus += 100.0
-            else:
-                # Get previous earnings to carry forward
-                previous_earnings = Earnings.query.filter(
-                    Earnings.delivery_agent_id == current_user.id,
-                    func.date(Earnings.earned_at) < func.date(func.now())
-                ).order_by(Earnings.earned_at.desc()).first()
+    #         if today_earnings:
+    #             # Add base pay for this delivery
+    #             today_earnings.base_pay += base_pay_per_delivery
+    #             today_earnings.trips_count += 1
+    #             # Add bonus for every 5 trips
+    #             if today_earnings.trips_count % 5 == 0:
+    #                 today_earnings.bonus += 100.0
+    #         else:
+    #             # Get previous earnings to carry forward
+    #             previous_earnings = Earnings.query.filter(
+    #                 Earnings.delivery_agent_id == current_user.id,
+    #                 func.date(Earnings.earned_at) < func.date(func.now())
+    #             ).order_by(Earnings.earned_at.desc()).first()
                 
-                initial_base_pay = previous_earnings.base_pay if previous_earnings else 0.0
-                initial_bonus = previous_earnings.bonus if previous_earnings else 0.0
+    #             initial_base_pay = previous_earnings.base_pay if previous_earnings else 0.0
+    #             initial_bonus = previous_earnings.bonus if previous_earnings else 0.0
                 
-                today_earnings = Earnings(
-                    delivery_agent_id=current_user.id,
-                    base_pay=initial_base_pay + base_pay_per_delivery,
-                    bonus=initial_bonus,
-                    trips_count=1
-                )
-                db.session.add(today_earnings)
+    #             today_earnings = Earnings(
+    #                 delivery_agent_id=current_user.id,
+    #                 base_pay=initial_base_pay + base_pay_per_delivery,
+    #                 bonus=initial_bonus,
+    #                 trips_count=1
+    #             )
+    #             db.session.add(today_earnings)
 
-        db.session.commit()
+    #     db.session.commit()
 
-        response = {
-            'message': 'Order delivery status updated successfully',
-            'delivery_status': order.delivery_status
-        }
+    #     response = {
+    #         'message': 'Order delivery status updated successfully',
+    #         'delivery_status': order.delivery_status
+    #     }
         
-        if order.delivery_status == "Completed":
-            response['earnings'] = {
-                'base_pay': today_earnings.base_pay,
-                'bonus': today_earnings.bonus,
-                'trips_count': today_earnings.trips_count,
-                'total': today_earnings.base_pay + today_earnings.bonus
-            }
+    #     if order.delivery_status == "Completed":
+    #         response['earnings'] = {
+    #             'base_pay': today_earnings.base_pay,
+    #             'bonus': today_earnings.bonus,
+    #             'trips_count': today_earnings.trips_count,
+    #             'total': today_earnings.base_pay + today_earnings.bonus
+    #         }
         
-        return jsonify(response)
+    #     return jsonify(response)
 
 
     @app.route('/api/delivery-agent/earnings')

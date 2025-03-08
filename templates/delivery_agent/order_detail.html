@@ -1,5 +1,6 @@
 {% extends "/delivery_agent/index.html" %} {% block css %}
 <link rel="stylesheet" href="/css/delivery_agent/order_detail.css" />
+
 <link
   href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
   rel="stylesheet"
@@ -133,6 +134,74 @@
       </div>
     </section>
   {% endif %}
+
+<!-- Order Status Update Form -->
+    {% if order.status == "Accepted" or order.delivery_status in ["Picked Up", "Out for Delivery", "Delivered"] %}
+    <section>
+      <div class="tracking-container">
+        <div class="step-line"></div>
+
+        <!-- Accepted (Always Active, Not Clickable) -->
+        <div class="tracking-step active">
+          <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Accepted" />
+          <div class="step-text">Accepted</div>
+        </div>
+
+        <!-- Picked Up -->
+        {% if order.delivery_status == "Accepted" %}
+        <form method="POST" action="/api/orders/{{ order.id }}/update_status">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <input type="hidden" name="delivery_status" value="Picked Up" />
+          <button type="submit" class="tracking-step">
+            <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" alt="Picked Up" />
+            <div class="step-text">Picked Up</div>
+          </button>
+        </form>
+        {% else %}
+        <div class="tracking-step active">
+          <img src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png" alt="Picked Up" />
+          <div class="step-text">Picked Up</div>
+        </div>
+        {% endif %}
+
+        <!-- Out for Delivery -->
+        {% if order.delivery_status == "Picked Up" %}
+        <form method="POST" action="/api/orders/{{ order.id }}/update_status">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <input type="hidden" name="delivery_status" value="Out for Delivery" />
+          <button type="submit" class="tracking-step">
+            <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Out for Delivery" />
+            <div class="step-text">Out for Delivery</div>
+          </button>
+        </form>
+        {% elif order.delivery_status in ["Out for Delivery", "Delivered"] %}
+        <div class="tracking-step active">
+          <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Out for Delivery" />
+          <div class="step-text">Out for Delivery</div>
+        </div>
+        {% endif %}
+
+        <!-- Delivered -->
+        {% if order.delivery_status == "Out for Delivery" %}
+        <form method="POST" action="/api/orders/{{ order.id }}/update_status">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <input type="hidden" name="delivery_status" value="Delivered" />
+          <button type="submit" class="tracking-step">
+            <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Delivered" />
+            <div class="step-text">Delivered</div>
+          </button>
+        </form>
+        {% elif order.delivery_status == "Delivered" %}
+        <div class="tracking-step active">
+          <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Delivered" />
+          <div class="step-text">Delivered</div>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
+
+  
   
 </main>
 {% endblock content %} {% block script %}

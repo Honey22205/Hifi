@@ -1,28 +1,31 @@
 {% extends "delivery_agent/index.html" %} {% block css %}
-<link rel="stylesheet" href="/css/delivery_agent/track_order.css" />
 <link
   href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
   rel="stylesheet"
 />
-<script
-  src="https://kit.fontawesome.com/a076d05399.js"
-  crossorigin="anonymous"
-></script>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  rel="stylesheet"
+/>
+<link href="/css/delivery_agent/track_order.css" rel="stylesheet" />
 {% endblock css %} {% block content %}
-<div class="order-detail-container">
+<div class="order-detail-container" data-order-id="{{ order.id }}">
   <header>
     <div class="logo">
-      <span class="logo-icon"></span>
+      <i class="fas fa-clock logo-icon"></i>
       <h1>Order Detail</h1>
     </div>
     <div class="order-status">
       <span class="status-label">Status:</span>
-      <span class="status-value" id="orderStatus"
-        >{{ order.delivery_status }}</span
+      <span
+        class="status-value"
+        id="orderStatus"
+        data-status="{{ order.delivery_status }}"
       >
+        {{ order.delivery_status }}
+      </span>
     </div>
   </header>
-
   <main>
     <section class="order-info card">
       <h2>Order #OD{{ order.id }}</h2>
@@ -38,7 +41,6 @@
         <span id="estimatedDelivery">30:00</span>
       </div>
     </section>
-
     <section class="customer-info card">
       <h2>Customer Details</h2>
       <div class="info-grid">
@@ -70,7 +72,6 @@
         </div>
       </div>
     </section>
-
     <section class="order-items card">
       <h2>Ordered Items</h2>
       <ul id="itemList">
@@ -106,51 +107,67 @@
         </div>
       </div>
     </section>
-    <section>
+    <!-- Tracking Section -->
+    <section class="tracking-section card">
+      <h2>Order Tracking</h2>
       <div class="tracking-container">
-        <div class="step-line"></div>
-
-        <div class="tracking-step active">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/747/747376.png"
-            alt="Accepted"
-          />
-          <div class="step-text">Accepted</div>
-        </div>
-
-        <div class="tracking-step">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png"
-            alt="Picked Up"
-          />
-          <div class="step-text">Picked Up</div>
-        </div>
-
-        <div class="tracking-step">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png"
-            alt="Out for Delivery"
-          />
-          <div class="step-text">Out for Delivery</div>
-        </div>
-
-        <div class="tracking-step">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/190/190411.png"
-            alt="Delivered"
-          />
-          <div class="step-text">Delivered</div>
-        </div>
+        <!-- Horizontal line connecting steps -->
+        <!-- Progress bar -->
         <div class="progress-bar">
-          <div class="progress"></div>
+          <div class="progress" id="progressBar"></div>
         </div>
-  
-    </div>
-    <button onclick="trackOrder()">Next Step</button>
-
+        <!-- Steps -->
+        <div class="tracking-steps">
+          <div class="tracking-step" data-step="Accepted">
+            <div class="step-icon-container">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/747/747376.png"
+                alt="Accepted"
+              />
+            </div>
+            <div class="step-text">Accepted</div>
+          </div>
+          <div class="tracking-step" data-step="Picked Up">
+            <div class="step-icon-container">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/1046/1046784.png"
+                alt="Picked Up"
+              />
+            </div>
+            <div class="step-text">Picked Up</div>
+          </div>
+          <div class="tracking-step" data-step="Out for Delivery">
+            <div class="step-icon-container">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png"
+                alt="Out for Delivery"
+              />
+            </div>
+            <div class="step-text">Out for Delivery</div>
+          </div>
+          <div class="tracking-step" data-step="Delivered">
+            <div class="step-icon-container">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/190/190411.png"
+                alt="Delivered"
+              />
+            </div>
+            <div class="step-text">Delivered</div>
+          </div>
+        </div>
+      </div>
+      <div class="tracking-actions">
+        <button
+          id="updateStatusBtn"
+          class="btn-update-status"
+          onclick="trackOrder()"
+        >
+          Update Status
+        </button>
+      </div>
     </section>
   </main>
 </div>
 {% endblock content %} {% block script %}
 <script src="/js/delivery_agent/track_order.js"></script>
-{% endblock %}
+{% endblock script %}

@@ -1,15 +1,98 @@
-function trackOrder() {
-    const container = document.querySelector('.order-detail-container');
-    const orderId = container.getAttribute('data-order-id');
-    const steps = document.querySelectorAll('.tracking-step');
-    const progress = document.querySelector('.progress');
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize the tracking UI when the page loads
+  updateTrackingUI();
   
+  // Attach event listener to the update button (if it exists)
+  const updateButton = document.getElementById('updateStatusBtn');
+  if (updateButton) {
+    updateButton.addEventListener('click', trackOrder);
+  }
+});
+
+function updateTrackingUI() {
+  const statusElement = document.getElementById('orderStatus');
+  const currentStatus = statusElement.textContent.trim();
+  const trackingSteps = document.querySelectorAll('.tracking-step');
+  const progressBar = document.getElementById('progressBar');
+  const updateButton = document.getElementById('updateStatusBtn');
+  
+  // Define the order of statuses
+  const statusOrder = ["Accepted", "Picked Up", "Out for Delivery", "Delivered"];
+  const currentStepIndex = statusOrder.indexOf(currentStatus);
+  
+  // Update progress bar width
+  const progressPercentage = ((currentStepIndex + 1) / statusOrder.length) * 100;
+  if (progressBar) {
+    progressBar.style.width = `${progressPercentage}%`;
+  }
+  
+  // Update button text and disable if order is delivered
+  if (updateButton) {
+    if (currentStatus === "Delivered") {
+      updateButton.textContent = "Order Completed";
+      updateButton.disabled = true;
+    } else {
+      updateButton.textContent = "Update Status";
+      updateButton.disabled = false;
+    }
+  }
+  
+  // Update each step's appearance based on the current status
+  trackingSteps.forEach((step) => {
+    const stepStatus = step.getAttribute('data-step');
+    const stepIndex = statusOrder.indexOf(stepStatus);
+    
+    // Reset any classes that indicate status
+    step.classList.remove('active', 'completed');
+    
+    if (stepIndex < currentStepIndex) {
+      // Mark steps before the current one as completed
+      step.classList.add('completed');
+      const iconElement = step.querySelector('.step-icon i');
+      if (iconElement) {
+        iconElement.className = 'fas fa-check';
+      }
+    } else if (stepIndex === currentStepIndex) {
+      // Mark the current step as active
+      step.classList.add('active');
+    }
+  });
+}
+
+function trackOrder() {
+  const container = document.querySelector('.order-detail-container');
+  if (!container) return; // safeguard if container is missing
+  
+  const orderId = container.getAttribute('data-order-id');
+  const statusElement = document.getElementById('orderStatus');
+  let currentStatus = statusElement.textContent.trim();
+  
+  // Normalize backend terminology: if "Completed" then consider it as "Delivered"
+  if (currentStatus === "Completed") {
+    currentStatus = "Delivered";
+  }
+  
+  // Define the order of statuses
+  const statusOrder = ["Accepted", "Picked Up", "Out for Delivery", "Delivered"];
+  const currentStepIndex = statusOrder.indexOf(currentStatus);
+  
+  // If already delivered or an unknown status, do nothing
+  if (currentStatus === "Delivered" || currentStepIndex === -1) {
+    return;
+  }
+  
+  // Determine the next status in the sequence
+  const nextStepIndex = currentStepIndex + 1;
+  if (nextStepIndex < statusOrder.length) {
+    const nextStatus = statusOrder[nextStepIndex];
+    
     // Send POST request to update the order's status
     fetch(`/api/orders/${orderId}/update_status`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ status: nextStatus })
     })
     .then(response => {
       if (!response.ok) {
@@ -18,44 +101,30 @@ function trackOrder() {
       return response.json();
     })
     .then(data => {
-      // Determine the current status and update the UI accordingly.
-      // Assume the status sequence is: Accepted, Picked Up, Out for Delivery, Delivered
-      const statusOrder = ["Accepted", "Picked Up", "Out for Delivery", "Delivered"];
-      
-      // Map backend status if necessary (if backend returns "Completed" for final step)
-      let displayStatus = data.delivery_status;
-      if (displayStatus === "Completed") {
-        displayStatus = "Delivered";
+      // Use the backend status if provided, mapping "Completed" to "Delivered" if needed
+      let updatedStatus = data.delivery_status || nextStatus;
+      if (updatedStatus === "Completed") {
+        updatedStatus = "Delivered";
       }
       
-      // Find the index of the current status
-      const currentStep = statusOrder.indexOf(displayStatus);
+      // Update the status display in the UI
+      statusElement.textContent = updatedStatus;
+      statusElement.setAttribute('data-status', updatedStatus);
       
-      // Update the active class on each tracking step
-      steps.forEach((step, index) => {
-        if (index <= currentStep) {
-          step.classList.add("active");
+      // Refresh the tracking UI based on the new status
+      updateTrackingUI();
+      
+      // If the order is now delivered, show an earnings alert if data is provided
+      if (updatedStatus === "Delivered") {
+        if (data.earnings) {
+          alert(`Earnings Updated:
+Base Pay: ₹${data.earnings.base_pay}
+Bonus: ₹${data.earnings.bonus}
+Trips: ${data.earnings.trips_count}
+Total: ₹${data.earnings.total}`);
         } else {
-          step.classList.remove("active");
+          alert("Order successfully delivered!");
         }
-      });
-      
-      // Update progress bar width: calculates percentage based on current step
-      progress.style.width = `${((currentStep + 1) / statusOrder.length) * 100}%`;
-      
-      // Optionally update any status text on the page if needed
-      const statusElement = document.getElementById('orderStatus');
-      if (statusElement) {
-        statusElement.textContent = displayStatus;
-      }
-      
-      // Optionally, if delivered and earnings data is provided, show an alert with earnings info
-      if (displayStatus === "Delivered" && data.earnings) {
-        alert(`Earnings Updated:
-  Base Pay: ₹${data.earnings.base_pay}
-  Bonus: ₹${data.earnings.bonus}
-  Trips: ${data.earnings.trips_count}
-  Total: ₹${data.earnings.total}`);
       }
     })
     .catch(err => {
@@ -63,4 +132,4 @@ function trackOrder() {
       alert(err.error || 'An error occurred while updating status.');
     });
   }
-  
+}

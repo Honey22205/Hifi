@@ -726,7 +726,7 @@ def delivery_agent_routes(app, db):
         if not order:
             return "Order not found", 404
         
-        return render_template("delivery_agent/order_detail.html", user=current_user, order=order)
+        return render_template("delivery_agent/track_order.html", user=current_user, order=order)
 
 
 
@@ -772,19 +772,34 @@ def delivery_agent_routes(app, db):
         order = Order.query.get_or_404(order_id)
         
         valid_statuses = ["Accepted", "Picked Up", "Out for Delivery", "Delivered"]
-        new_status = request.form.get('delivery_status')
+        data = request.get_json() or {}
+        new_status = data.get('status')
         
-        if new_status in valid_statuses:
-            order.delivery_status = new_status
-            if new_status == "Delivered":
-                order.status = "Delivered"
-                order.delivered_at = func.now()
-            db.session.commit()
-        else:
-            return "Invalid status update", 400
+        if new_status not in valid_statuses:
+            return jsonify({"error": "Invalid status update"}), 400
+
+        order.delivery_status = new_status
+        if new_status == "Delivered":
+            order.status = "Delivered"
+            order.delivered_at = func.now()
         
-        return redirect(url_for('delivery_partner_order_detail', order_id=order_id))
-    
+        db.session.commit()
+        
+        # Optionally, include earnings details if needed.
+        response_data = {
+            "order_id": order.id,
+            "delivery_status": order.delivery_status
+        }
+        if new_status == "Delivered" and hasattr(order, "earnings"):
+            response_data["earnings"] = {
+                "base_pay": order.earnings.base_pay,
+                "bonus": order.earnings.bonus,
+                "trips_count": order.earnings.trips_count,
+                "total": order.earnings.total
+            }
+        
+        return jsonify(response_data), 200
+
 
 
 

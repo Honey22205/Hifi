@@ -185,9 +185,16 @@
     <div class="earnings-details">
       <p>
         Total Earnings:
-        <span class="highlight">₹{{ earnings.base_pay + earnings.bonus }}</span>
+        <span class="highlight">
+          ₹{{ (recent_earnings.base_pay | default(0)) + (recent_earnings.bonus | default(0)) }}
+        </span>        
       </p>
+      {% if earnings and earnings.base_pay %}
       <p>Base Pay: <span class="highlight">₹{{ earnings.base_pay }}</span></p>
+      {% else %}
+      <p>Base Pay: <span class="highlight">0.0</span></p>
+      {% endif %}
+
       <p>Bonus: <span class="highlight">₹{{ earnings.bonus }}</span></p>
       <p>
         Trips Completed:
@@ -203,8 +210,8 @@
     </div>
     <p>
       <span class="highlight">
-        {{ ((earnings.base_pay + earnings.bonus) / 1500 * 100)|round(0,
-        'floor') }}%
+        {{ ((earnings.base_pay + earnings.bonus) / 1500 * 100)|round(0, 'floor')
+        }}%
       </span>
       of your goal achieved!
     </p>
@@ -216,13 +223,16 @@
     <div class="earnings-details">
       <p>
         Total Earnings:
-        <span class="highlight"
-          >₹{{ recent_earnings.base_pay + recent_earnings.bonus }}</span
-        >
+        <span class="highlight">
+          ₹{{ (recent_earnings.base_pay | default(0)) + (recent_earnings.bonus | default(0)) }}
+        </span>
+        
       </p>
-      <p>
-        Base Pay: <span class="highlight">₹{{ recent_earnings.base_pay }}</span>
-      </p>
+      {% if earnings and earnings.base_pay %}
+      <p>Base Pay: <span class="highlight">₹{{ earnings.base_pay }}</span></p>
+      {% else %}
+      <p>Base Pay: <span class="highlight">0.0</span></p>
+      {% endif %}
       <p>Bonus: <span class="highlight">₹{{ recent_earnings.bonus }}</span></p>
       <p>
         Earned At:
@@ -233,25 +243,26 @@
         </span>
       </p>
     </div>
+  </div>
+
+  <!-- JavaScript for Tabs -->
+  <script>
+    function openTab(evt, tabName) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+    // Open default tab on page load
+    document.getElementById("defaultOpen").click();
+  </script>
+
+  {% endblock content %}
 </div>
-
-<!-- JavaScript for Tabs -->
-<script>
-  function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-  }
-  // Open default tab on page load
-  document.getElementById("defaultOpen").click();
-</script>
-
-{% endblock content %}

@@ -8,7 +8,7 @@
   {% block css %}{% endblock css %}
 </head>
 <body>
-  <div class="sidebar">
+  <aside class="sidebar">
     <h2>HIFI Delivery <span class="highlight">Eats</span></h2>
     <ul>
         <li class="{% if request.endpoint == 'delivery_agent' %}active{% endif %}">
@@ -40,7 +40,7 @@
         </li>
       </ul>
       
-  </div>
+  </aside>
   <div class="main-content">
     <!-- Flash messages container -->
     {% with messages = get_flashed_messages() %}

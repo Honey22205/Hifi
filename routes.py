@@ -766,7 +766,7 @@ def delivery_agent_routes(app, db):
         flash("Order declined successfully")
         return redirect(url_for("delivery_agent"))
 
-
+#  Update request for Delivery_Status
     @app.route('/api/orders/<int:order_id>/update_status', methods=['POST'])
     def edit_delivery_status(order_id):
         order = Order.query.get_or_404(order_id)

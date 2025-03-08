@@ -18,7 +18,11 @@
     padding: 0;
     box-sizing: border-box;
   }
-  
+
+
+
+
+
   body {
     font-family: 'Poppins', sans-serif;
     background: var(--bg-color);
@@ -301,5 +305,37 @@
   .btn-danger:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  }
+  
+
+
+
+
+  /* Tracking Steps Styles */
+  .tracking-container {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between steps */
+  }
+  
+  .tracking-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .tracking-step img {
+    width: 50px;  /* Set uniform small size */
+    height: 50px;
+    object-fit: contain;
+    background: none; /* Remove unwanted background */
+    border: none; /* Remove any border */
+    padding: 5px; /* Add space to avoid overlapping */
+  }
+  
+  .tracking-step .step-text {
+    margin-top: 5px;
+    font-size: 14px;
   }
   

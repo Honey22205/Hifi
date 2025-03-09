@@ -76,6 +76,34 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(timerInterval);
         document.getElementById('estimatedDelivery').textContent = "Delivered";
     }
-
     
 });
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     // Existing DOMContentLoaded code for order details
+//     // ... (your existing order details JS code)
+
+//     // Setup click events for stars (if review editing is needed)
+//     const stars = document.querySelectorAll(".star");
+//     const reviewText = document.getElementById("reviewText");
+
+//     stars.forEach((star) => {
+//       star.addEventListener("click", function () {
+//         const value = this.getAttribute("data-value");
+
+//         // Remove 'active' class from all stars
+//         stars.forEach((s) => s.classList.remove("active"));
+
+//         // Add 'active' class to all stars up to selected value
+//         stars.forEach((s, index) => {
+//           if (index < value) {
+//             s.classList.add("active");
+//           }
+//         });
+
+//         // Update review text based on selected rating (for demonstration)
+//         const reviews = ["Very Bad", "Bad", "Average", "Good", "Excellent"];
+//         reviewText.textContent = `Customer Rating: ${reviews[value - 1]}`;
+//       });
+//     });
+//   });

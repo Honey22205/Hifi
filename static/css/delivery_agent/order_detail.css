@@ -338,4 +338,45 @@
     margin-top: 5px;
     font-size: 14px;
   }
-  
+/* Customer Review Card Styles */
+.customer-review {
+  text-align: center;
+  padding: 1.5rem;
+  max-width: auto;
+  margin: 1.5rem auto;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.review-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stars {
+  font-size: 2rem;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.star {
+  cursor: pointer; /* Remove pointer if not interactive */
+  margin: 0 0.1rem;
+  transition: color 0.3s;
+}
+
+.star.filled {
+  color: gold;
+}
+
+#reviewText {
+  font-size: 1rem;
+  color: #555;
+  margin: 0;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  max-width: 250px;
+  overflow: hidden;
+}

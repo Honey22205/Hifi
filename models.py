@@ -144,3 +144,21 @@ class Earnings(db.Model):
     
     def __repr__(self):
         return f'<Earnings {self.delivery_agent_id} - {self.earned_at}>'
+  
+# Delivery agent feedback  
+class DeliveryFeedback(db.Model):
+    __tablename__ = 'delivery_feedback'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    delivery_agent_id = db.Column(db.Integer, db.ForeignKey('delivery_agent.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # e.g., a 1-5 scale rating
+    feedback = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=func.now())
+    
+    # Relationships
+    order = db.relationship("Order", backref=db.backref("delivery_feedbacks", lazy=True))
+    delivery_agent = db.relationship("DeliveryAgent", backref=db.backref("delivery_feedbacks", lazy=True))
+    
+    def __repr__(self):
+        return f'<DeliveryFeedback Order:{self.order_id} Agent:{self.delivery_agent_id} Rating:{self.rating}>'

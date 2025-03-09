@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
 from sqlalchemy import func, or_
-from models import Customer, Admin, DeliveryAgent, Address, Earnings, Order, OrderItem, MenuItem
+from models import Customer, Admin, DeliveryAgent, Address, DeliveryFeedback, Earnings, Order, OrderItem, MenuItem
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
@@ -686,13 +686,13 @@ def delivery_agent_routes(app, db):
 
     @app.route('/delivery-partner/order-detail/<int:order_id>')
     def delivery_partner_order_detail(order_id):
-        """Fetch detailed order information along with order items and customer details."""
+        """Fetch detailed order information along with order items, customer details, and feedback."""
         
         order = (
             db.session.query(Order)
             .options(
                 joinedload(Order.user).joinedload(Customer.addresses),  # Load customer's addresses
-                joinedload(Order.items).joinedload(OrderItem.menu_item)  # Load each order item's menu details
+                joinedload(Order.items).joinedload(OrderItem.menu_item)   # Load each order item's menu details
             )
             .filter(
                 Order.delivery_agent_id == current_user.id,
@@ -703,8 +703,20 @@ def delivery_agent_routes(app, db):
         
         if not order:
             return "Order not found", 404
+
+        # Fetch the delivery feedback associated with the current order and delivery agent
+        feedback = (
+            db.session.query(DeliveryFeedback)
+            .filter(
+                DeliveryFeedback.delivery_agent_id == current_user.id,
+                DeliveryFeedback.order_id == order_id
+            )
+            .first()
+        )
         
-        return render_template("delivery_agent/order_detail.html", user=current_user, order=order)
+        print(feedback)
+        
+        return render_template("delivery_agent/order_detail.html", user=current_user, order=order, feedback=feedback)
     
     @app.route('/delivery-partner/order-tracking/<int:order_id>')
     def delivery_partner_order_tracking(order_id):

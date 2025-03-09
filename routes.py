@@ -782,23 +782,66 @@ def delivery_agent_routes(app, db):
         if new_status == "Delivered":
             order.status = "Delivered"
             order.delivered_at = func.now()
-        
+            
+            # Define the base pay per delivery.
+            base_pay_per_delivery = 50.0
+            
+            # Determine today's date.
+            today = func.date(func.now())
+            
+            # Query today's earnings record for the current delivery agent.
+            today_earnings = Earnings.query.filter(
+                Earnings.delivery_agent_id == current_user.id,
+                func.date(Earnings.earned_at) == today
+            ).first()
+            
+            if today_earnings:
+                # Update today's earnings.
+                today_earnings.base_pay += base_pay_per_delivery
+                today_earnings.trips_count += 1
+                # Add bonus for every 5 trips.
+                if today_earnings.trips_count % 5 == 0:
+                    today_earnings.bonus += 100.0
+            else:
+                # Retrieve the most recent earnings record before today to carry forward totals.
+                previous_earnings = Earnings.query.filter(
+                    Earnings.delivery_agent_id == current_user.id,
+                    func.date(Earnings.earned_at) < today
+                ).order_by(Earnings.earned_at.desc()).first()
+                
+                initial_base_pay = previous_earnings.base_pay if previous_earnings else 0.0
+                initial_bonus = previous_earnings.bonus if previous_earnings else 0.0
+                
+                # Create a new earnings record for today.
+                today_earnings = Earnings(
+                    delivery_agent_id=current_user.id,
+                    base_pay=initial_base_pay + base_pay_per_delivery,
+                    bonus=initial_bonus,
+                    trips_count=1,
+                    earned_at=func.now()
+                )
+                db.session.add(today_earnings)
+
         db.session.commit()
         
-        # Optionally, include earnings details if needed.
+        # Build response data including earnings details for a delivered order.
         response_data = {
             "order_id": order.id,
             "delivery_status": order.delivery_status
         }
-        if new_status == "Delivered" and hasattr(order, "earnings"):
-            response_data["earnings"] = {
-                "base_pay": order.earnings.base_pay,
-                "bonus": order.earnings.bonus,
-                "trips_count": order.earnings.trips_count,
-                "total": order.earnings.total
-            }
-        
+        if new_status == "Delivered" and order.delivery_agent_id:
+            earnings = Earnings.query.filter_by(delivery_agent_id=order.delivery_agent_id).first()
+            if earnings:
+                total = earnings.base_pay + earnings.bonus
+                response_data["earnings"] = {
+                    "base_pay": earnings.base_pay,
+                    "bonus": earnings.bonus,
+                    "trips_count": earnings.trips_count,
+                    "total": total
+                }
+            
         return jsonify(response_data), 200
+
 
 
 

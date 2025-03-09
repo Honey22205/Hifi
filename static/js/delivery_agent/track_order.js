@@ -114,22 +114,10 @@ function trackOrder() {
       // Refresh the tracking UI based on the new status
       updateTrackingUI();
       
-      // If the order is now delivered, show an earnings alert if data is provided
-      if (updatedStatus === "Delivered") {
-        if (data.earnings) {
-          alert(`Earnings Updated:
-Base Pay: ₹${data.earnings.base_pay}
-Bonus: ₹${data.earnings.bonus}
-Trips: ${data.earnings.trips_count}
-Total: ₹${data.earnings.total}`);
-        } else {
-          alert("Order successfully delivered!");
-        }
-      }
     })
     .catch(err => {
       console.error('Error updating order status:', err);
-      alert(err.error || 'An error occurred while updating status.');
+      // flash("Error updating");
     });
   }
 }

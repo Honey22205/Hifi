@@ -24,9 +24,8 @@ class Customer(UserMixin, db.Model):
     
     # Flask-Login required method
     def get_id(self):
-        return self.id
+        return f"customer:{self.id}"
     
-
 
     
 class Address(db.Model):
@@ -57,7 +56,7 @@ class Admin(UserMixin, db.Model):
         return f'<Admin {self.username}>'
     
     def get_id(self):
-        return self.id
+        return f"admin:{self.id}"
 
 class DeliveryAgent(UserMixin, db.Model):
     __tablename__ = 'delivery_agent'  
@@ -79,7 +78,7 @@ class DeliveryAgent(UserMixin, db.Model):
         return f'<DeliveryAgent {self.username}>'
     
     def get_id(self):
-        return self.id
+        return f"delivery:{self.id}"
     
 
 # Order Model

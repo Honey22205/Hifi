@@ -234,6 +234,7 @@ def register_routes(app, db, bcrypt, mail):
                     if bcrypt.check_password_hash(delivery_agent.password, password):
                         login_user(delivery_agent)
                         db.session.refresh(current_user)
+                        print(current_user.get_id())
                         return redirect(url_for('delivery_agent'))
                     else:
                         flash('Invalid username or password')
@@ -534,10 +535,11 @@ def customer_routes(app, db):
 # Delivery agent routes
 def delivery_agent_routes(app, db):
     @app.route('/delivery-agent')
-    @login_required
     def delivery_agent():
         # Get the delivery agent using the current user's ID
+        print(current_user)
         agent = DeliveryAgent.query.get(current_user.id)
+        print(agent)
         
         # Create a subquery that selects one address per customer
         address_subquery = (

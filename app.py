@@ -42,10 +42,24 @@ def create_app():
     login_manager.init_app(app)
     
     # models
-    from models import Customer
+    from models import Customer, Admin, DeliveryAgent
     @login_manager.user_loader
-    def load_user(id):
-        return Customer.query.get(int(id))
+    def load_user(user_id):
+        try:
+            user_type, id_str = user_id.split(":")
+            real_id = int(id_str)
+        except Exception as e:
+            # Return None if the id is not in the expected format
+            return None
+
+        if user_type == "customer":
+            return Customer.query.get(real_id)
+        elif user_type == "admin":
+            return Admin.query.get(real_id)
+        elif user_type == "delivery":
+            return DeliveryAgent.query.get(real_id)
+        return None
+
     
     @login_manager.unauthorized_handler
     def unauthorized_callback():

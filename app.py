@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request, url_for
+from flask import Flask, flash, redirect, request, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -50,6 +50,7 @@ def create_app():
     @login_manager.unauthorized_handler
     def unauthorized_callback():
         if '/admin' in request.path or '/delivery-agent' in request.path:
+            flash('You are not authorized to access this page.', 'danger')
             return redirect(url_for('employee_login'))
         else:
             return redirect('/login')

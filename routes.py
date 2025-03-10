@@ -41,6 +41,10 @@ def register_routes(app, db, bcrypt, mail):
             if Customer.query.filter_by(email=email).first():
                 flash('Email already registered. Please log in.', 'error')
                 return redirect(url_for('signup'))
+            
+            if Customer.query.filter_by(phone=phone).first():
+                flash('Phone number already registered. Please log in.', 'error')
+                return redirect(url_for('signup'))
 
             # Create new customer entry
             new_customer = Customer(username=username, email=email, phone=phone, password=hashed_password)
@@ -530,6 +534,7 @@ def customer_routes(app, db):
 # Delivery agent routes
 def delivery_agent_routes(app, db):
     @app.route('/delivery-agent')
+    @login_required
     def delivery_agent():
         # Get the delivery agent using the current user's ID
         agent = DeliveryAgent.query.get(current_user.id)
@@ -612,7 +617,7 @@ def delivery_agent_routes(app, db):
             .filter(
                 Order.delivery_agent_id == current_user.id,
                 db.func.date(Order.created_at) == today,
-                Order.status == "Delivered"  # Adjust if your status differs
+                Order.status == "Delivered"  or Order.status == "Pending" or Order.status == "Accepted"
             )
             .count()
         )
@@ -635,19 +640,18 @@ def delivery_agent_routes(app, db):
         today_earnings = db.session.query(
             func.coalesce(func.sum(Earnings.base_pay), 0).label("base_pay"),
             func.coalesce(func.sum(Earnings.bonus), 0).label("bonus"),
-            # func.coalesce(func.sum(Earnings.trips_count), 0).label("trips"),
-            func.count(Earnings.id).label("delivery_count")
+            func.coalesce(func.sum(Earnings.trips_count), 0).label("trips"),
+            # func.count(Earnings.id).label("delivery_count")
         ).filter(
             Earnings.delivery_agent_id == current_user.id,
-            func.date(Earnings.earned_at) == func.date(func.now())
+            func.date(Earnings.earned_at) == datetime.date.today()
         ).first()
 
         # Query to get the most recent earnings record
         recent_earning = Earnings.query.filter(
             Earnings.delivery_agent_id == current_user.id
         ).order_by(Earnings.earned_at.desc()).first()
-            
-        print(today_earnings)
+        
         
         # Pass all the data to the template
         return render_template(
@@ -1019,27 +1023,3 @@ def delivery_agent_routes(app, db):
     #     } for earning in earnings]
         
     #     return jsonify(earnings_data)
-
-
-# Customer routes
-def customer_routes(app, db):
-    @app.route('/user/profile')
-    @login_required
-    def customer():
-        return render_template('user/profile.html', user=current_user)
-
-    @app.route("/address/new", methods=["POST"])
-    @login_required
-    def add_address():
-        data = request.get_json()
-        new_address = Address(
-            address_line=data.get("address_line"),
-            city=data.get("city"),
-            state=data.get("state"),
-            zip_code=data.get("zip_code"),
-            customer_id=current_user.id
-        )
-        db.session.add(new_address)
-        db.session.commit()
-        return jsonify({"message": "Address added successfully!"}), 201
-    

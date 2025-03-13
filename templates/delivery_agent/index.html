@@ -20,21 +20,8 @@
         <li class="{% if request.endpoint == 'delivery_partner_profile' %}active{% endif %}">
           <a href="{{ url_for('delivery_partner_profile') }}">🧑 Profile</a>
         </li>
-        <li >
-          <a href="#">💰 Earnings</a>
-        </li>
-        <li >
-          <a href="#">🔔 Notifications</a>
-        </li>
-        <li >
-          <a href="#">⚙️ Settings</a>
-        </li>
-        <li >
-          <a href="#">🔒 Change Password</a>
-        </li>
-        <li >
-          <a href="#">❓ Support</a>
-        </li>
+        
+        
         <li>
           <a href="{{ url_for('employee_logout') }}" class="logout">🚪 Logout</a>
         </li>

@@ -10,6 +10,14 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
 
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.dates as mdates
+import io
+from sqlalchemy import create_engine
+
 def register_routes(app, db, bcrypt, mail):
     @app.route('/')
     def index():
@@ -372,6 +380,8 @@ def admin_routes(app, db):
         if not current_user.is_authenticated:
             return redirect(url_for('employee_login'))
         
+        
+
         return render_template('admin/home.html')
 
     
@@ -435,6 +445,68 @@ def admin_routes(app, db):
         db.session.commit()
         flash(f"Agent {agent.username} has been activated.")
         return jsonify({"message": f"Agent {agent.username} has been activated."})
+    
+
+
+# BUSINESS PERFORMANCE INSIGHTS MODULE
+
+    @app.route('/admin/insights')
+    @login_required
+    def sales_plot_insights():
+        
+        # Database se data fetch karna
+        db_path = os.path.join(os.getcwd(), "instance", "database.db")
+        engine = create_engine(f"sqlite:///{db_path}")  # Replace with your actual database
+        conn = engine.connect()
+        
+        query = """
+            SELECT DATE(created_at) AS order_date, SUM(total_price) AS total_sales
+            FROM "order"
+            GROUP BY order_date
+            ORDER BY order_date;
+        """
+        df = pd.read_sql_query(query, conn)
+        conn.close()
+        
+        if df.empty:
+            return render_template('admin/home.html', image_url=None, message="No sales data available.")
+        
+        # Convert order_date to datetime
+        df['order_date'] = pd.to_datetime(df['order_date'])
+        
+        # Matplotlib Styling
+        sns.set_style("whitegrid")
+        plt.figure(figsize=(14, 6))
+        
+        # Line plot
+        sns.lineplot(x=df['order_date'], y=df['total_sales'], marker='o', color='b', linewidth=2.5, label="Total Order")
+        
+        # Date formatting
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=max(1, len(df) // 10)))
+        plt.xticks(rotation=45, ha="right")
+        
+        # Data labels
+        for i in range(0, len(df), max(1, len(df) // 8)):
+            plt.text(df['order_date'][i], df['total_sales'][i] + 5, f"{int(df['total_sales'][i])}",
+                    fontsize=10, ha='center', color='black', fontweight='bold')
+        
+        # Labels and title
+        plt.xlabel("Date", fontsize=12)
+        plt.ylabel("Total Order (₹)", fontsize=12)
+        plt.title("📊 Order Trend Over Time", fontsize=14, fontweight="bold")
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.6)
+        
+        # Save plot as an image
+        image_path = os.path.join("static", "insight_image", "sales_plot.png")
+        os.makedirs(os.path.dirname(image_path), exist_ok=True)
+        plt.savefig(image_path, format='png')
+        plt.close()
+        
+        print(image_path)
+        # Pass the image URL to the template
+        return render_template('admin/home.html', image_url=url_for('static', filename='/insight_image/sales_plot.png'))
 
 
 

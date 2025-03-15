@@ -5,7 +5,7 @@ import secrets
 from zoneinfo import ZoneInfo
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
-from sqlalchemy import func, or_
+from sqlalchemy import Date, cast, func, or_
 from models import Customer, Admin, DeliveryAgent, Address, DeliveryFeedback, Earnings, Order, OrderItem, MenuItem
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.dates as mdates
 import io
-from sqlalchemy import create_engine
+import plotly.express as px
 
 def register_routes(app, db, bcrypt, mail):
     @app.route('/')
@@ -381,9 +381,48 @@ def admin_routes(app, db):
         if not current_user.is_authenticated:
             return redirect(url_for('employee_login'))
         
-        
+        # Fetch aggregated order data by date using SQLAlchemy ORM.
+        orders = db.session.query(
+            func.date(Order.created_at).label("order_date"),
+            func.sum(Order.total_price).label("total_sales")
+        ).group_by(func.date(Order.created_at))\
+        .order_by(func.date(Order.created_at))\
+        .all()
 
-        return render_template('admin/home.html')
+        if not orders:
+            return render_template('admin/home.html', chart_html=None, message="No sales data available.")
+
+        # Convert the query result to a Pandas DataFrame.
+        df = pd.DataFrame(orders, columns=['order_date', 'total_sales'])
+        df['order_date'] = pd.to_datetime(df['order_date'])
+
+        # Create an interactive Plotly line chart with markers.
+        fig = px.line(df, x='order_date', y='total_sales', markers=True,
+                    title="📊 Order Trend Over Time",
+                    labels={'order_date': 'Date', 'total_sales': 'Total Order (₹)'})
+
+        # Enhance interactivity: add a range slider and selection buttons.
+        fig.update_layout(
+            hovermode="x unified",
+            template="plotly_white",
+            xaxis=dict(
+                rangeselector=dict(
+                    buttons=[
+                        dict(count=7, label="1w", step="day", stepmode="backward"),
+                        dict(count=1, label="1m", step="month", stepmode="backward"),
+                        dict(count=6, label="6m", step="month", stepmode="backward"),
+                        dict(step="all")
+                    ]
+                ),
+                rangeslider=dict(visible=True),
+                type="date"
+            )
+        )
+
+        # Convert the Plotly figure to HTML (without full HTML headers) to embed in the template.
+        chart_html = fig.to_html(full_html=False)
+
+        return render_template('admin/home.html', chart_html=chart_html)
 
     
     @app.route('/admin/delivery_partner')
@@ -447,70 +486,63 @@ def admin_routes(app, db):
         flash(f"Agent {agent.username} has been activated.")
         return jsonify({"message": f"Agent {agent.username} has been activated."})
     
-
-
-# BUSINESS PERFORMANCE INSIGHTS MODULE
-
     @app.route('/admin/insights')
     @login_required
     def sales_plot_insights():
-        
-        # Database se data fetch karna
-        db_path = os.path.join(os.getcwd(), "instance", "database.db")
-        engine = create_engine(f"sqlite:///{db_path}")  # Replace with your actual database
-        conn = engine.connect()
-        
-        query = """
-            SELECT DATE(created_at) AS order_date, SUM(total_price) AS total_sales
-            FROM "order"
-            GROUP BY order_date
-            ORDER BY order_date;
-        """
-        df = pd.read_sql_query(query, conn)
-        conn.close()
-        
-        if df.empty:
+        # Fetch aggregated order data by date using SQLAlchemy ORM.
+        orders = db.session.query(
+            func.date(Order.created_at).label("order_date"),
+            func.sum(Order.total_price).label("total_sales")
+        ).group_by(func.date(Order.created_at))\
+        .order_by(func.date(Order.created_at))\
+        .all()
+
+        if not orders:
             return render_template('admin/home.html', image_url=None, message="No sales data available.")
+
+        # Convert query result to a DataFrame
+        df = pd.DataFrame(orders, columns=['order_date', 'total_sales'])
         
         # Convert order_date to datetime
         df['order_date'] = pd.to_datetime(df['order_date'])
-        
-        # Matplotlib Styling
+
+        # Set plot style and create the figure
         sns.set_style("whitegrid")
         plt.figure(figsize=(14, 6))
-        
-        # Line plot
-        sns.lineplot(x=df['order_date'], y=df['total_sales'], marker='o', color='b', linewidth=2.5, label="Total Order")
-        
-        # Date formatting
+
+        # Create the line plot
+        sns.lineplot(x=df['order_date'], y=df['total_sales'], marker='o', color='b',
+                    linewidth=2.5, label="Total Order")
+
+        # Format the x-axis for dates
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
         plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=max(1, len(df) // 10)))
         plt.xticks(rotation=45, ha="right")
-        
-        # Data labels
+
+        # Add data labels at intervals
         for i in range(0, len(df), max(1, len(df) // 8)):
-            plt.text(df['order_date'][i], df['total_sales'][i] + 5, f"{int(df['total_sales'][i])}",
+            plt.text(df['order_date'][i], df['total_sales'][i] + 5,
+                    f"{int(df['total_sales'][i])}",
                     fontsize=10, ha='center', color='black', fontweight='bold')
-        
-        # Labels and title
+
+        # Set labels and title
         plt.xlabel("Date", fontsize=12)
         plt.ylabel("Total Order (₹)", fontsize=12)
         plt.title("📊 Order Trend Over Time", fontsize=14, fontweight="bold")
         plt.legend()
         plt.grid(True, linestyle="--", alpha=0.6)
-        
-        # Save plot as an image
-        image_path = os.path.join("static", "insight_image", "sales_plot.png")
-        os.makedirs(os.path.dirname(image_path), exist_ok=True)
-        plt.savefig(image_path, format='png')
+
+        # Save the plot to an in-memory buffer
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png')
         plt.close()
-        
-        print(image_path)
-        # Pass the image URL to the template
-        return render_template('admin/home.html', image_url=url_for('static', filename='/insight_image/sales_plot.png'))
+        buffer.seek(0)
 
+        # Encode the image as base64 and create a data URL
+        image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        image_url = f"data:image/png;base64,{image_base64}"
 
-
+        return render_template('admin/home.html', image_url=image_url)
 
     
 # Customer routes

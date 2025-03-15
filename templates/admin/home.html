@@ -4,7 +4,6 @@
   {{ super() }}
   <!-- Link to the home-specific CSS file -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/home.css') }}">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock css %}
 
 {% block content %}
@@ -37,14 +36,13 @@
   <section class="admin-section">
       <h2>Sales Overview</h2>
       <div class="chart-container">
-          <canvas id="salesChart"></canvas>
-          <h4>Click on chart button in navbar isko baad me fix krna h</h4>
-        {% if image_url %}
-            <img src="{{ image_url }}" alt="Sales Trend Chart">
+        {% if chart_html %}
+            {{ chart_html|safe }}
+        {% elif image_url %}
+            <img src="{{image_url}}" alt="chart" >
         {% else %}
             <p>{{ message }}</p>
         {% endif %}
-
       </div>
   </section>
 
@@ -66,9 +64,10 @@
       </table>
   </section>
 </div>
-{% endblock content %}
-{% block script %}
-{{super()}}
 
-<script src="{{ url_for('static', filename='js/admin/home.js') }}"></script>
+{% endblock content %}
+
+{% block script %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/admin/home.js') }}"></script>
 {% endblock script %}

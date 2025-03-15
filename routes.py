@@ -1,3 +1,4 @@
+import base64
 import datetime
 import os
 import secrets
@@ -9,6 +10,13 @@ from models import Customer, Admin, DeliveryAgent, Address, DeliveryFeedback, Ea
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
+
+# Data analysis
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.dates as mdates
+import io
 
 def register_routes(app, db, bcrypt, mail):
     @app.route('/')
@@ -436,7 +444,61 @@ def admin_routes(app, db):
         flash(f"Agent {agent.username} has been activated.")
         return jsonify({"message": f"Agent {agent.username} has been activated."})
 
+    @app.route('/admin/insights')
+    @login_required
+    def sales_plot_insights():
+        # Use the pre-declared engine for database connection
+        query = """
+            SELECT DATE(created_at) AS order_date, SUM(total_price) AS total_sales
+            FROM "order"
+            GROUP BY order_date
+            ORDER BY order_date;
+        """
+        df = pd.read_sql_query(query, db)
 
+        if df.empty:
+            return render_template('admin/home.html', image_url=None, message="No sales data available.")
+
+        # Convert order_date to datetime
+        df['order_date'] = pd.to_datetime(df['order_date'])
+
+        # Set plot style and create the figure
+        sns.set_style("whitegrid")
+        plt.figure(figsize=(14, 6))
+
+        # Create the line plot
+        sns.lineplot(x=df['order_date'], y=df['total_sales'], marker='o', color='b',
+                    linewidth=2.5, label="Total Order")
+
+        # Format the x-axis for dates
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=max(1, len(df) // 10)))
+        plt.xticks(rotation=45, ha="right")
+
+        # Add data labels at intervals
+        for i in range(0, len(df), max(1, len(df) // 8)):
+            plt.text(df['order_date'][i], df['total_sales'][i] + 5,
+                    f"{int(df['total_sales'][i])}",
+                    fontsize=10, ha='center', color='black', fontweight='bold')
+
+        # Set labels and title
+        plt.xlabel("Date", fontsize=12)
+        plt.ylabel("Total Order (₹)", fontsize=12)
+        plt.title("📊 Order Trend Over Time", fontsize=14, fontweight="bold")
+        plt.legend()
+        plt.grid(True, linestyle="--", alpha=0.6)
+
+        # Save the plot to an in-memory buffer
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png')
+        plt.close()
+        buffer.seek(0)
+
+        # Encode the image as base64 and create a data URL
+        image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        image_url = f"data:image/png;base64,{image_base64}"
+
+        return render_template('admin/home.html', image_url=image_url)
 
 
     

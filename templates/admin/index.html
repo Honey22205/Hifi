@@ -14,7 +14,7 @@
     <div class="logo">HIFI Delivery Eats</div>
     <nav class="nav-menu">
       <a href="{{ url_for('admin') }}" class="{% if request.endpoint == 'admin' %}active{% endif %}">Dashboard</a>
-      <a href="#" class="{% if request.endpoint == 'orders' %}active{% endif %}">Orders</a>
+      <a href="{{url_for('sales_plot_insights') }}" class="{% if request.endpoint == 'orders' %}active{% endif %}">Chart</a>
       <a href="#" class="{% if request.endpoint == 'users' %}active{% endif %}">Users</a>
       <a href="{{ url_for('delivery_partner') }}" class="{% if request.endpoint == 'delivery_partner' %}active{% endif %}">Delivery Partner</a>
       <a href="{{ url_for('employee_logout') }}">Logout</a>

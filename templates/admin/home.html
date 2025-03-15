@@ -38,6 +38,13 @@
       <h2>Sales Overview</h2>
       <div class="chart-container">
           <canvas id="salesChart"></canvas>
+          <h4>Click on chart button in navbar isko baad me fix krna h</h4>
+        {% if image_url %}
+            <img src="{{ image_url }}" alt="Sales Trend Chart">
+        {% else %}
+            <p>{{ message }}</p>
+        {% endif %}
+
       </div>
   </section>
 

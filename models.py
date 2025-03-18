@@ -10,7 +10,7 @@ class Customer(UserMixin, db.Model):
     phone = db.Column(db.Integer,unique=True, nullable=False) 
     password = db.Column(db.String(100), nullable=False)
     # address = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(db.DateTime, default=func.now())
+    # created_at = db.Column(db.DateTime, default=func.now())
     
     
     addresses = db.relationship("Address", backref="customer", lazy=True)

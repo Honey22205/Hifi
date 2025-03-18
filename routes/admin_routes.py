@@ -12,6 +12,7 @@ import plotly.express as px
 from datetime import datetime, timedelta, timezone
 
 from models import Customer, DeliveryAgent, Order
+from routes.insight_utils import generate_line_chart, generate_pie_chart
 
 
 def admin_routes(app, db):
@@ -155,57 +156,13 @@ def admin_routes(app, db):
     @app.route('/admin/insights')
     @login_required
     def insights():
-        # Fetch aggregated order data by date using SQLAlchemy ORM.
-        orders = db.session.query(
-            func.date(Order.created_at).label("order_date"),
-            func.sum(Order.total_price).label("total_sales")
-        ).group_by(func.date(Order.created_at))\
-        .order_by(func.date(Order.created_at))\
-        .all()
-
-        if not orders:
-            return render_template('admin/home.html', image_url=None, message="No sales data available.")
-
-        # Convert query result to a DataFrame
-        df = pd.DataFrame(orders, columns=['order_date', 'total_sales'])
+        if not current_user.is_authenticated:
+            return redirect(url_for('employee_login'))
         
-        # Convert order_date to datetime
-        df['order_date'] = pd.to_datetime(df['order_date'])
-
-        # Set plot style and create the figure
-        sns.set_style("whitegrid")
-        plt.figure(figsize=(14, 6))
-
-        # Create the line plot
-        sns.lineplot(x=df['order_date'], y=df['total_sales'], marker='o', color='b',
-                    linewidth=2.5, label="Total Order")
-
-        # Format the x-axis for dates
-        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
-        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=max(1, len(df) // 10)))
-        plt.xticks(rotation=45, ha="right")
-
-        # Add data labels at intervals
-        for i in range(0, len(df), max(1, len(df) // 8)):
-            plt.text(df['order_date'][i], df['total_sales'][i] + 5,
-                    f"{int(df['total_sales'][i])}",
-                    fontsize=10, ha='center', color='black', fontweight='bold')
-
-        # Set labels and title
-        plt.xlabel("Date", fontsize=12)
-        plt.ylabel("Total Order (₹)", fontsize=12)
-        plt.title("📊 Order Trend Over Time", fontsize=14, fontweight="bold")
-        plt.legend()
-        plt.grid(True, linestyle="--", alpha=0.6)
-
-        # Save the plot to an in-memory buffer
-        buffer = io.BytesIO()
-        plt.savefig(buffer, format='png')
-        plt.close()
-        buffer.seek(0)
-
-        # Encode the image as base64 and create a data URL
-        image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-        image_url = f"data:image/png;base64,{image_base64}"
-
-        return render_template('admin/insights.html', image_url=image_url)
+        
+        #import data from insight_utils
+        # these function is defined in insight_utils.py
+        chart_html=generate_pie_chart()           #its data is Demo
+        line_chart_html=generate_line_chart()     #its data is Refelected from the DataBase
+        
+        return render_template('admin/insights.html',chart_html=chart_html, line_chart_html=line_chart_html )

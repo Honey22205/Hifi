@@ -125,7 +125,7 @@ def admin_routes(app, db):
     
     @app.route('/admin/insights')
     @login_required
-    def sales_plot_insights():
+    def insights():
         # Fetch aggregated order data by date using SQLAlchemy ORM.
         orders = db.session.query(
             func.date(Order.created_at).label("order_date"),
@@ -179,4 +179,4 @@ def admin_routes(app, db):
         image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
         image_url = f"data:image/png;base64,{image_base64}"
 
-        return render_template('admin/home.html', image_url=image_url)
+        return render_template('admin/insights.html', image_url=image_url)

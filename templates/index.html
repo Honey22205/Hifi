@@ -7,7 +7,7 @@
 
     <!-- Link Css file -->
     {% block css %}
-      <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/index.css" />
     {% endblock css %}
     <link
       href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css"
@@ -23,8 +23,7 @@
     <!--========== HEADER ==========-->
     <header class="l-header" id="header">
       <nav class="nav bd-container">
-        <a href="#" class="nav__logo">Hifi Delivery Eats</a>
-
+        <a href="#" class="nav__logo">HIFI Delivery Eats</a>
         <div class="nav__menu" id="nav-menu">
           <ul class="nav__list">
             <li class="nav__item">
@@ -41,28 +40,35 @@
               </form>
             </li>
             <li class="nav__item">
-              <a href="#home" class="nav__link active-link">Home</a>
+              <a href="{{ url_for('index') }}" class="nav__link active-link"
+                >Home</a
+              >
             </li>
+
             <li class="nav__item">
-              <a href="#menu" class="nav__link">Menu</a>
+              <a href="{{ url_for('show_menu') }}" class="nav__link">Menu</a>
             </li>
+
             <li class="nav__item">
-              <a href="#cart" class="nav__link">Cart</a>
+              <a href="#" class="nav__link">
+                Cart(<span class="nav__cart-count"></span>)
+              </a>
             </li>
-            
-            <!-- Additional Links -->
+            <!--
             <li class="nav__item">
               <a href="{{ url_for('about') }}" class="nav__link">About</a>
             </li>
-            
             <li class="nav__item">
-              <a href="{{ url_for('contact') }}" class="nav__link">Contact us</a>
+              <a href="{{ url_for('contact') }}" class="nav__link"
+                >Contact Us</a
+              >
             </li>
-
-            <!-- Authentication Logic -->
+            -->
             {% if user %}
             <li class="nav__item">
-              <a href="{{url_for('customer')}}" class="nav__link">{{ user.username.split()[0] | upper }}</a>
+              <a href="{{ url_for('customer') }}" class="nav__link">
+                {{ user.username.split()[0] | upper }}
+              </a>
             </li>
             <li class="nav__item">
               <a href="{{ url_for('logout') }}" class="nav__link">Logout</a>
@@ -72,13 +78,11 @@
               <a href="/signin" class="nav__link">Sign In</a>
             </li>
             {% endif %}
-
             <li class="nav__item">
               <i class="bx bx-moon change-theme" id="theme-button"></i>
             </li>
           </ul>
         </div>
-
         <div class="nav__toggle" id="nav-toggle">
           <i class="bx bx-menu"></i>
         </div>
@@ -86,42 +90,38 @@
     </header>
 
     <!-- Flash Messages (positioned right below the header) -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash-messages" id="flash-messages">
-          {% for message in messages %}
-            <p class="flash-message">{{ message }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div class="flash-messages" id="flash-messages">
+      {% for message in messages %}
+      <p class="flash-message">{{ message }}</p>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
 
-    <main class="l-main">
-      {% block content %}{% endblock content %}
-    </main>
+    <main class="l-main">{% block content %}{% endblock content %}</main>
 
     {% block scripts %}
-      <script>
-        // Auto-hide flash messages after 3 seconds
-        setTimeout(function() {
-          const flashMessages = document.getElementById('flash-messages');
-          if (flashMessages) {
-            flashMessages.style.opacity = '0';
-            // Optionally remove from DOM after fade-out
-            setTimeout(() => flashMessages.remove(), 500);
-          }
-        }, 3000);
-
-        // Toggle nav menu for mobile devices
-        const navToggle = document.getElementById('nav-toggle');
-        const navMenu = document.getElementById('nav-menu');
-
-        if (navToggle && navMenu) {
-          navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('show-menu');
-          });
+    <script>
+      // Auto-hide flash messages after 3 seconds
+      setTimeout(function () {
+        const flashMessages = document.getElementById("flash-messages");
+        if (flashMessages) {
+          flashMessages.style.opacity = "0";
+          // Optionally remove from DOM after fade-out
+          setTimeout(() => flashMessages.remove(), 500);
         }
-      </script>
+      }, 3000);
+
+      // Toggle nav menu for mobile devices
+      const navToggle = document.getElementById("nav-toggle");
+      const navMenu = document.getElementById("nav-menu");
+
+      if (navToggle && navMenu) {
+        navToggle.addEventListener("click", () => {
+          navMenu.classList.toggle("show-menu");
+        });
+      }
+    </script>
     {% endblock scripts %}
   </body>
 </html>

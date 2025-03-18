@@ -1,8 +1,7 @@
 /* ========== Profile Container ========== */
 .profile-container {
   max-width: 1000px;
-  /* margin: 3rem auto; */
-  margin-top: 10rem;
+  margin: 10rem auto;  /* centers the container horizontally */
   padding: 0 2rem;
   max-height: 90vh;      
   overflow-y: auto;      
@@ -16,11 +15,11 @@
 .profile-container::-webkit-scrollbar {
   display: none;
 }
+
 /* ========== Profile Header ========== */
 .profile-header {
   margin-bottom: 2.5rem;
   text-align: center;
-  /* Removed sticky styles */
 }
 
 .profile-header h1 {
@@ -122,10 +121,12 @@
 
 .btn-delete-address {
   color: #d32f2f;
+  font-weight: bold;  /* text bold for delete */
 }
 
 .btn-make-preferred {
   color: #4caf50;
+  font-weight: bold;  /* text bold for set as default */
 }
 
 /* ========== Primary Button ========== */
@@ -221,4 +222,3 @@
   border-color: #4caf50;
   outline: none;
 }
-

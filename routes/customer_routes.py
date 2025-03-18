@@ -9,6 +9,11 @@ def customer_routes(app, db):
     @login_required
     def customer():
         return render_template('user/profile.html', user=current_user)
+    
+    @app.route('/show_menu')
+    def show_menu():
+        print(current_user)
+        return render_template('user/show_menu.html', user=current_user)
 
     @app.route("/address/new", methods=["POST"])
     @login_required

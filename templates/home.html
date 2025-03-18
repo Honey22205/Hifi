@@ -1,25 +1,133 @@
-{% extends "index.html" %} {% block title %}Home Page{% endblock title %} 
+{% extends "index.html" %} {% block title %}Home Page{% endblock title %}
 
 <!-- Link Css file -->
 
 {%block content %}
 
-<!--========== HOME ==========-->
 <section class="home" id="home">
   <div class="home__container bd-container bd-grid">
     <div class="home__data">
       <h1 class="home__title">HIFI Delivery Eats</h1>
       <h2 class="home__subtitle">
-        Experience the best food delivery service with Hifi Delivery Eats!
+        Savor the Finest Dishes Delivered to Your Door!
       </h2>
-      <a href="menu.html" class="button">View Menu</a>
+      <a href="#" class="button">Explore Our Menu</a>
       <div class="delivered-meals">
         <p class="delivered-text" id="dynamic-text">
           <span>1,000+</span> meals delivered last week!
         </p>
       </div>
     </div>
-    <img src="/img/home_page.jpg" alt="" class="home__img" />
+    <img
+      src="{{ url_for('static', filename='images/home.png') }}"
+      alt="Home Image"
+      class="home__img"
+      onerror="this.src='https://via.placeholder.com/150?text=Home+Image+Not+Found';"
+    />
+  </div>
+</section>
+
+<section class="menu section bd-container" id="menu">
+  <span class="section-subtitle">Our Specialties</span>
+  <h2 class="section-title">Featured Dishes</h2>
+  <div class="menu__container bd-grid">
+    <!-- Salads Category -->
+    <div class="menu__content" data-category="salads">
+      <img
+        src="{{ url_for('static', filename='/images/Barbecue Salad.jpg') }}"
+        alt="Barbecue Salad"
+        class="menu__img"
+        onerror="this.src='https://via.placeholder.com/150?text=Image+Not+Found';"
+      />
+      <h3 class="menu__name">Barbecue Salad</h3>
+      <span class="menu__category">Salads</span>
+    </div>
+    <!-- Seafood Category -->
+    <div class="menu__content" data-category="seafood">
+      <img
+        src="{{ url_for('static', filename='images/Fish Fillet.jpg') }}"
+        alt="Fish Fillet"
+        class="menu__img"
+        onerror="this.src='https://via.placeholder.com/150?text=Image+Not+Found';"
+      />
+      <h3 class="menu__name">Fish Fillet</h3>
+      <span class="menu__category">Seafood</span>
+    </div>
+    <!-- Meats Category -->
+    <div class="menu__content" data-category="meats">
+      <img
+        src="{{ url_for('static', filename='images/Grilled Steak.jpg') }}"
+        alt="Grilled Steak"
+        class="menu__img"
+        onerror="this.src='https://via.placeholder.com/150?text=Image+Not+Found';"
+      />
+      <h3 class="menu__name">Grilled Steak</h3>
+      <span class="menu__category">Meats</span>
+    </div>
+    <!-- Indian Category -->
+    <div class="menu__content" data-category="indian">
+      <img
+        src="{{ url_for('static', filename='images/Hyderabadi Biryani.jpg') }}"
+        alt="Hyderabadi Biryani"
+        class="menu__img"
+        onerror="this.src='https://via.placeholder.com/150?text=Image+Not+Found';"
+      />
+      <h3 class="menu__name">Hyderabadi Biryani</h3>
+      <span class="menu__category">Indian</span>
+    </div>
+    <!-- Fast Food Category -->
+    <div class="menu__content" data-category="fast-food">
+      <img
+        src="{{ url_for('static', filename='images/Burger.jpg') }}"
+        alt="Burger"
+        class="menu__img"
+        onerror="this.src='https://via.placeholder.com/150?text=Image+Not+Found';"
+      />
+      <h3 class="menu__name">Burger</h3>
+      <span class="menu__category">Fast Food</span>
+    </div>
+    <!-- Breakfast Category -->
+    <div class="menu__content" data-category="breakfast">
+      <img
+        src="{{ url_for('static', filename='images/Breakfast Platter.jpg') }}"
+        alt="Breakfast Platter"
+        class="menu__img"
+        onerror="this.src='https://via.placeholder.com/150?text=Image+Not+Found';"
+      />
+      <h3 class="menu__name">Breakfast Platter</h3>
+      <span class="menu__category">Breakfast</span>
+    </div>
+  </div>
+  <div style="text-align: center; margin-top: 20px">
+    <div class="show1">
+      <a
+        href="#"
+        class="button"
+        style="background-color: green"
+        >Discover Full Menu</a
+      >
+    </div>
+  </div>
+</section>
+
+<section class="about section bd-container" id="about">
+  <div class="about__container bd-grid">
+    <div class="about__data">
+      <div class="about_info">
+        <span class="section-subtitle_about__initial">About us</span>
+      </div>
+      <h2 class="section-title about__initial">Crafting Culinary Excellence</h2>
+      <p class="about__description">
+        Indulge in the finest cuisine with top-notch service at HIFI Delivery
+        Eats. Visit us for an unforgettable dining experience.
+      </p>
+      <div class="about_1"><a href="#" class="button">Our Story</a></div>
+    </div>
+    <img
+      src="{{ url_for('static', filename='imgs/about.jpg') }}"
+      alt="About Image"
+      class="about__img"
+    />
   </div>
 </section>
 {% endblock content %}

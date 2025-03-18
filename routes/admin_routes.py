@@ -1,15 +1,17 @@
 import base64
+import datetime
 import io
 from flask import flash, jsonify, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from matplotlib import pyplot as plt
 import pandas as pd
-from sqlalchemy import func
+from sqlalchemy import desc, func
 import seaborn as sns
 import matplotlib.dates as mdates
 import plotly.express as px
+from datetime import datetime, timedelta, timezone
 
-from models import DeliveryAgent, Order
+from models import Customer, DeliveryAgent, Order
 
 
 def admin_routes(app, db):
@@ -18,48 +20,75 @@ def admin_routes(app, db):
         if not current_user.is_authenticated:
             return redirect(url_for('employee_login'))
         
-        # Fetch aggregated order data by date using SQLAlchemy ORM.
+        # Aggregated order data by date for sales chart
         orders = db.session.query(
             func.date(Order.created_at).label("order_date"),
             func.sum(Order.total_price).label("total_sales")
         ).group_by(func.date(Order.created_at))\
         .order_by(func.date(Order.created_at))\
         .all()
+        
+        # Total orders count
+        total_orders = db.session.query(func.count(Order.id)).scalar()
+        
+        # Total users count (assuming customers represent users)
+        total_users = db.session.query(func.count(Customer.id)).scalar()
+        
+        # Overall total sales from all orders
+        overall_total_sales = db.session.query(func.coalesce(func.sum(Order.total_price), 0)).scalar()
+        
+        # New users: customers created in the last 30 days. 
+        # If your Customer model does not yet include a created_at column, add one or adjust this logic.
+        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        delivery_partners = db.session.query(func.count(DeliveryAgent.id)).scalar()
+        # if hasattr(Customer, 'created_at'):
+        #     new_users = db.session.query(func.count(Customer.id))\
+        #                 .filter(Customer.created_at >= thirty_days_ago)\
+        #                 .scalar()
+        
+        # Query recent orders (limit to last 10 orders)
+        recent_orders = Order.query.order_by(desc(Order.created_at)).limit(10).all()
 
-        if not orders:
-            return render_template('admin/home.html', chart_html=None, message="No sales data available.")
-
-        # Convert the query result to a Pandas DataFrame.
-        df = pd.DataFrame(orders, columns=['order_date', 'total_sales'])
-        df['order_date'] = pd.to_datetime(df['order_date'])
-
-        # Create an interactive Plotly line chart with markers.
-        fig = px.line(df, x='order_date', y='total_sales', markers=True,
-                    title="📊 Order Trend Over Time",
-                    labels={'order_date': 'Date', 'total_sales': 'Total Order (₹)'})
-
-        # Enhance interactivity: add a range slider and selection buttons.
-        fig.update_layout(
-            hovermode="x unified",
-            template="plotly_white",
-            xaxis=dict(
-                rangeselector=dict(
-                    buttons=[
-                        dict(count=7, label="1w", step="day", stepmode="backward"),
-                        dict(count=1, label="1m", step="month", stepmode="backward"),
-                        dict(count=6, label="6m", step="month", stepmode="backward"),
-                        dict(step="all")
-                    ]
-                ),
-                rangeslider=dict(visible=True),
-                type="date"
+        # Prepare sales chart
+        if orders:
+            # Convert query result to DataFrame
+            df = pd.DataFrame(orders, columns=['order_date', 'total_sales'])
+            df['order_date'] = pd.to_datetime(df['order_date'])
+            
+            # Create Plotly line chart with markers
+            fig = px.line(df, x='order_date', y='total_sales', markers=True,
+                        title="📊 Order Trend Over Time",
+                        labels={'order_date': 'Date', 'total_sales': 'Total Sales (₹)'})
+            fig.update_layout(
+                hovermode="x unified",
+                template="plotly_white",
+                xaxis=dict(
+                    rangeselector=dict(
+                        buttons=[
+                            dict(count=7, label="1w", step="day", stepmode="backward"),
+                            dict(count=1, label="1m", step="month", stepmode="backward"),
+                            dict(count=6, label="6m", step="month", stepmode="backward"),
+                            dict(step="all")
+                        ]
+                    ),
+                    rangeslider=dict(visible=True),
+                    type="date"
+                )
             )
-        )
+            chart_html = fig.to_html(full_html=False)
+            message = ""
+        else:
+            chart_html = None
+            message = "No sales data available."
 
-        # Convert the Plotly figure to HTML (without full HTML headers) to embed in the template.
-        chart_html = fig.to_html(full_html=False)
-
-        return render_template('admin/home.html', chart_html=chart_html)
+        return render_template('admin/home.html',
+                            chart_html=chart_html,
+                            message=message,
+                            total_orders=total_orders,
+                            total_users=total_users,
+                            overall_total_sales=overall_total_sales,
+                            delivery_partners=delivery_partners,
+                            recent_orders=recent_orders)
 
     
     @app.route('/admin/delivery_partner')

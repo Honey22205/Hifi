@@ -68,7 +68,13 @@
     padding: 30px;
     background: linear-gradient(135deg, #fdfdfd, #f4f4f4);
     text-align: center;
-  }
+    margin-left: 270px; /* Adjust based on your fixed sidebar width and desired gap */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
   
   .dashboard-content h1 {
     font-size: 28px;
@@ -123,5 +129,18 @@
       width: 100%;
       height: auto;
     }
+  }
+  
+  /* Additional styling for stat info in the sidebar */
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .stat-number {
+    font-size: 18px;
+    font-weight: bold;
+    color: #069c54; /* Using your primary color */
   }
   

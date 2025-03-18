@@ -1,59 +1,88 @@
-{% extends "admin/index.html" %}
-{% block title %}Insights{% endblock title %}
+{% extends "admin/index.html" %} {% block title %}Insights{% endblock title %}
 {% block css %}
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-  />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/insights.css') }}" />
-{% endblock css %}
-{% block content %}
-<div class="dashboard-container">
-  <aside class="sidebar">
-    <div class="stat-card">
-      <i class="fas fa-truck"></i>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/admin/insights.css') }}"
+/>
+{% endblock css %} {% block content %}
+<aside class="sidebar">
+  <div class="stat-card">
+    <i class="fas fa-truck"></i>
+    <div class="stat-info">
       <h2>Average Delivery Time</h2>
+      <span class="stat-number">32 mins</span>
     </div>
-    <div class="stat-card">
-      <i class="fas fa-exclamation-triangle"></i>
+  </div>
+  <div class="stat-card">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div class="stat-info">
       <h2>Delivery Partner Performance</h2>
+      <span class="stat-number">92%</span>
     </div>
-    <div class="stat-card">
-      <i class="fas fa-clock"></i>
+  </div>
+  <div class="stat-card">
+    <i class="fas fa-clock"></i>
+    <div class="stat-info">
       <h2>Return & Refund Statistics</h2>
+      <span class="stat-number">1.5%</span>
     </div>
-    <div class="stat-card">
-      <i class="fas fa-shipping-fast"></i>
+  </div>
+  <div class="stat-card">
+    <i class="fas fa-shipping-fast"></i>
+    <div class="stat-info">
       <h2>On-Time Order Percentage</h2>
+      <span class="stat-number">98%</span>
     </div>
-    <div class="stat-card">
-      <i class="fas fa-chart-line"></i>
+  </div>
+  <div class="stat-card">
+    <i class="fas fa-chart-line"></i>
+    <div class="stat-info">
       <h2>Revenue Per Delivery</h2>
+      <span class="stat-number">$15.20</span>
     </div>
-  </aside>
-  <main class="dashboard-content">
-    <h1>Business Insights Dashboard</h1>
+  </div>
+</aside>
+<main class="dashboard-content">
+  <h1>Business Insights Dashboard</h1>
 
-    <div class="images-container">
-      <div class="image-box">
-        <img src="{{ url_for('static', filename='insight_image/graph1.png') }}" alt="Supplier Defect Rate" />
-      </div>
-      <div class="image-box">
-        <img src="{{ url_for('static', filename='insight_image/graph2.png') }}" alt="Supplier Availability" />
-      </div>
+  <div class="images-container">
+    <div class="image-box">
+      <img
+        src="{{ url_for('static', filename='insight_image/graph1.png') }}"
+        alt="Supplier Defect Rate"
+      />
     </div>
+    <div class="image-box">
+      <img
+        src="{{ url_for('static', filename='insight_image/graph2.png') }}"
+        alt="Supplier Availability"
+      />
+    </div>
+  </div>
 
-    <div class="images-container">
-      <div class="image-box">
-        <img src="{{ url_for('static', filename='insight_image/graph3.png') }}" alt="Defect Rate by Supplier" />
-      </div>
-      <div class="image-box">
-        <img src="{{ url_for('static', filename='insight_image/graph4.png') }}" alt="Supplier Availability Comparison" />
-      </div>
-      <div class="image-box">
-        <img src="{{ url_for('static', filename='insight_image/graph5.png') }}" alt="Overall Performance" />
-      </div>
+  <div class="images-container">
+    <div class="image-box">
+      <img
+        src="{{ url_for('static', filename='insight_image/graph3.png') }}"
+        alt="Defect Rate by Supplier"
+      />
     </div>
-  </main>
-</div>
+    <div class="image-box">
+      <img
+        src="{{ url_for('static', filename='insight_image/graph4.png') }}"
+        alt="Supplier Availability Comparison"
+      />
+    </div>
+    <div class="image-box">
+      <img
+        src="{{ url_for('static', filename='insight_image/graph5.png') }}"
+        alt="Overall Performance"
+      />
+    </div>
+  </div>
+</main>
 {% endblock content %}

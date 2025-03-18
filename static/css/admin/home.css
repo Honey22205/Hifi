@@ -129,3 +129,48 @@ body {
 .data-table tr:hover {
   background-color: #ddd;
 }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.data-table thead {
+  background-color: #ff6b6b;
+  color: white;
+  font-weight: bold;
+}
+
+.data-table th, .data-table td {
+  padding: 12px 15px;
+  text-align: center;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.data-table tbody tr:hover {
+  background-color: #ffeaa7;
+  transition: 0.3s ease-in-out;
+}
+
+/* Status Colors */
+.status-pending {
+  color: #e67e22;
+  font-weight: bold;
+}
+
+.status-completed {
+  color: #2ecc71;
+  font-weight: bold;
+}
+
+.status-cancelled {
+  color: #e74c3c;
+  font-weight: bold;
+}

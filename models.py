@@ -93,6 +93,7 @@ class Order(db.Model):
     delivery_location = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=func.now())
     delivered_at = db.Column(db.DateTime, nullable=True)
+    order_feedback = db.Column(db.Integer, nullable=True)
 
     delivery_status = db.Column(db.String(50),nullable=False, default="ActionPending")
     
@@ -111,6 +112,7 @@ class OrderItem(db.Model):
     menu_item_id = db.Column(db.Integer, db.ForeignKey('menu_item.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
+
     
     menu_item = db.relationship("MenuItem", backref="order_items")
 

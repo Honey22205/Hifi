@@ -12,7 +12,7 @@ import plotly.express as px
 from datetime import datetime, timedelta, timezone
 
 from models import Customer, DeliveryAgent, Order
-from routes.insight_utils import calculate_average_delivery_time, calculate_delivery_partner_performance, calculate_on_time_order_percentage, calculate_return_refund_statistics, calculate_revenue_per_delivery, generate_agent_rating_chart, generate_line_chart, generate_pie_chart,generate_bar_chart
+from routes.insight_utils import calculate_average_delivery_time, calculate_delivery_partner_performance, calculate_on_time_order_percentage, calculate_return_refund_statistics, calculate_revenue_per_delivery, generate_agent_rating_chart, generate_line_chart, generate_monthly_retention_chart, generate_pie_chart,generate_bar_chart
 
 
 def admin_routes(app, db):
@@ -164,6 +164,9 @@ def admin_routes(app, db):
         bar_chart = generate_bar_chart()              # Demo data chart
         line_chart_html = generate_line_chart()       # Data from the database
         delivery_rating_bar = generate_agent_rating_chart()
+        monthly_retention_chart=generate_monthly_retention_chart()
+
+
         
         # Compute analysis statistics with optimized queries:
         avg_delivery_time = calculate_average_delivery_time() 
@@ -178,6 +181,8 @@ def admin_routes(app, db):
             line_chart_html=line_chart_html,
             bar_chart=bar_chart,
             delivery_rating_bar=delivery_rating_bar,
+            monthly_retention_chart=monthly_retention_chart,
+
             avg_delivery_time=avg_delivery_time,
             delivery_partner_performance=delivery_partner_performance,
             return_refund_percentage=return_refund_percentage,

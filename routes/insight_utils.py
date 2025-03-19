@@ -7,6 +7,7 @@ from sqlalchemy import func
 from datetime import timedelta
 import matplotlib.pyplot as plt
 from app import db
+from sqlalchemy import extract
 
 def generate_pie_chart():
 
@@ -117,38 +118,6 @@ def generate_bar_chart():
     return Markup(fig.to_html(full_html=False))
 
 
-# def generate_delivery_feedback_bar_chart():
-
-
-    
-#     agents = DeliveryFeedback.query.all()
-#     ratings = []
-
-
-
-#     fig = go.Figure()
-#     fig.add_trace(go.Bar(y=suppliers, x=1, name="1", marker=dict(color='#1E3A8A'), orientation='h'))
-#     fig.add_trace(go.Bar(y=suppliers, x=2, name="2", marker=dict(color='#6366F1'), orientation='h'))
-#     fig.add_trace(go.Bar(y=suppliers, x=3, name="3", marker=dict(color='#FF8C00'), orientation='h'))
-#     fig.add_trace(go.Bar(y=suppliers, x=4, name="4", marker=dict(color='#FF8C00'), orientation='h'))
-#     fig.add_trace(go.Bar(y=suppliers, x=5, name="5", marker=dict(color='#FF8C00'), orientation='h'))
-
-
-#     fig.update_layout(
-#         title="📦 Delivery Performance by Delivery Agent (Real Data)",
-#         xaxis=dict(title="Percentage"),
-#         yaxis=dict(title="Delivery Agent", categoryorder="total ascending"),
-#         barmode="stack",
-#         template="plotly_white",
-#         bargap=0.05,
-#         height=400,
-#     )
-
-#     return Markup(fig.to_html(full_html=False))
-
-
-
-
 
 def generate_agent_rating_chart():
     # Get all delivery agents
@@ -199,6 +168,64 @@ def generate_agent_rating_chart():
     )
 
     return Markup(fig.to_html(full_html=False))
+
+
+
+
+
+def generate_monthly_retention_chart():
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    retention_rates = []
+
+    for month_num in range(1, 13):
+        # Total customers who ordered in that month
+        total_customers = db.session.query(Order.user_id).filter(
+            extract('month', Order.created_at) == month_num
+        ).distinct().count()
+
+        # Repeat customers in that month (customers with more than 1 order till that month)
+        repeat_customers = 0
+        unique_users = db.session.query(Order.user_id).filter(
+            extract('month', Order.created_at) == month_num
+        ).distinct().all()
+
+        for user_id, in unique_users:
+            order_count = db.session.query(Order.id).filter(
+                Order.user_id == user_id,
+                extract('month', Order.created_at) <= month_num
+            ).count()
+            if order_count > 1:
+                repeat_customers += 1
+
+        # Calculate retention rate
+        retention_rate = (repeat_customers / total_customers) * 100 if total_customers > 0 else 0
+        retention_rates.append(retention_rate)
+
+    fig = go.Figure(data=go.Scatter(
+        x=months,
+        y=retention_rates,
+        mode='lines+markers',
+        name='Retention Rate',
+        line=dict(color='blue'),
+        marker=dict(size=8)
+    ))
+
+    fig.update_layout(
+        title='📊 Customer Retention Rate Over Time',
+        xaxis=dict(title='Months'),
+        yaxis=dict(title='Retention Rate (%)', range=[0, 100]),
+        height=400,
+        template="plotly_white"
+    )
+
+    return Markup(fig.to_html(full_html=False))
+
+
+
+
+
+
 
 def calculate_average_delivery_time():
     """Calculate the average delivery time (in minutes) for orders that have been delivered."""

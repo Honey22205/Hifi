@@ -12,7 +12,7 @@ import plotly.express as px
 from datetime import datetime, timedelta, timezone
 
 from models import Customer, DeliveryAgent, Order
-from routes.insight_utils import generate_line_chart, generate_pie_chart
+from routes.insight_utils import generate_agent_rating_chart, generate_line_chart, generate_pie_chart,generate_bar_chart
 
 
 def admin_routes(app, db):
@@ -163,6 +163,14 @@ def admin_routes(app, db):
         #import data from insight_utils
         # these function is defined in insight_utils.py
         chart_html=generate_pie_chart()           #its data is Demo
+        bar_chart=generate_bar_chart()
+
         line_chart_html=generate_line_chart()     #its data is Refelected from the DataBase
+        delivery_rating_bar=generate_agent_rating_chart()
         
-        return render_template('admin/insights.html',chart_html=chart_html, line_chart_html=line_chart_html )
+        return render_template('admin/insights.html',
+                               chart_html=chart_html, 
+                               line_chart_html=line_chart_html,
+                               bar_chart=bar_chart,
+                               delivery_rating_bar=delivery_rating_bar 
+            )   

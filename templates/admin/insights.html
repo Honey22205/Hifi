@@ -61,16 +61,10 @@
 
   <div class="images-container">
     <div class="image-box">
-      <img
-        src="{{ url_for('static', filename='insight_image/graph3.png') }}"
-        alt="Defect Rate by Supplier"
-      />
+      {{ bar_chart }}
     </div>
     <div class="image-box">
-      <img
-        src="{{ url_for('static', filename='insight_image/graph4.png') }}"
-        alt="Supplier Availability Comparison"
-      />
+      {{delivery_rating_bar }}
     </div>
     <div class="image-box">
       <img

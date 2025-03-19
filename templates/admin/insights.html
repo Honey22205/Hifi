@@ -14,38 +14,39 @@
     <i class="fas fa-truck"></i>
     <div class="stat-info">
       <h2>Average Delivery Time</h2>
-      <span class="stat-number">32 mins</span>
+      <span class="stat-number">{{ avg_delivery_time }} mins</span>
     </div>
   </div>
   <div class="stat-card">
     <i class="fas fa-exclamation-triangle"></i>
     <div class="stat-info">
       <h2>Delivery Partner Performance</h2>
-      <span class="stat-number">92%</span>
+      <span class="stat-number">{{ delivery_partner_performance }}%</span>
     </div>
   </div>
   <div class="stat-card">
     <i class="fas fa-clock"></i>
     <div class="stat-info">
       <h2>Return & Refund Statistics</h2>
-      <span class="stat-number">1.5%</span>
+      <span class="stat-number">{{ return_refund_percentage }}%</span>
     </div>
   </div>
   <div class="stat-card">
     <i class="fas fa-shipping-fast"></i>
     <div class="stat-info">
       <h2>On-Time Order Percentage</h2>
-      <span class="stat-number">98%</span>
+      <span class="stat-number">{{ on_time_order_percentage }}%</span>
     </div>
   </div>
   <div class="stat-card">
     <i class="fas fa-chart-line"></i>
     <div class="stat-info">
       <h2>Revenue Per Delivery</h2>
-      <span class="stat-number">₹ 15.20</span>
+      <span class="stat-number">₹ {{ revenue_per_delivery }}</span>
     </div>
   </div>
 </aside>
+
 <main class="dashboard-content">
   <h1>Business Insights Dashboard</h1>
 
@@ -66,12 +67,14 @@
     <div class="image-box">
       {{delivery_rating_bar }}
     </div>
+    <!--
     <div class="image-box">
       <img
-        src="{{ url_for('static', filename='insight_image/graph5.png') }}"
+        src="{{ image_url }}"
         alt="Overall Performance"
       />
     </div>
+    -->
   </div>
 </main>
 {% endblock content %}

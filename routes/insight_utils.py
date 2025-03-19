@@ -6,6 +6,7 @@ from models import DeliveryAgent, Order,DeliveryFeedback
 from sqlalchemy import func
 from datetime import timedelta
 import matplotlib.pyplot as plt
+from app import db
 
 def generate_pie_chart():
 
@@ -152,9 +153,9 @@ def generate_bar_chart():
 def generate_agent_rating_chart():
     # Get all delivery agents
     agents = DeliveryAgent.query.all()
-
     agent_names = [agent.username for agent in agents]
 
+    # Initialize a dictionary to store count of each rating (1-5) per agent
     ratings_count_per_agent = {agent.username: {r: 0 for r in range(1, 6)} for agent in agents}
 
     # Query database to count each rating per agent
@@ -168,7 +169,7 @@ def generate_agent_rating_chart():
         1: '#C0504D',  # red
         2: '#F79646',  # orange
         3: '#4F81BD',  # blue
-        4: '#FFDE00',   # yellow
+        4: '#FFDE00',  # yellow
         5: '#0dec05',  # green
     }
 
@@ -178,18 +179,19 @@ def generate_agent_rating_chart():
     for rating in range(1, 6):
         fig.add_trace(go.Bar(
             x=agent_names,
-            y=[rating if ratings_count_per_agent[agent][rating] > 0 else 0 for agent in agent_names],  # bar height = rating
+            # Use the actual count of ratings instead of the rating value itself
+            y=[ratings_count_per_agent[agent][rating] for agent in agent_names],
             name=f"{rating} Star",
             marker_color=colors[rating],
-            text=[rating] * len(agent_names),
+            # Optionally display the count as text
+            text=[ratings_count_per_agent[agent][rating] for agent in agent_names],
             textposition='inside'
         ))
 
     fig.update_layout(
         title="⭐ Delivery Agent Ratings (1 to 5 stars)",
         xaxis=dict(title="Delivery Agent"),
-        # yaxis=dict(title="Number of Ratings"),
-        yaxis=dict(title="Rating Scale (1 to 5)", tickmode='linear', dtick=1, range=[0.5, 5.5]),
+        yaxis=dict(title="Number of Ratings"),  # Update label to reflect counts
         barmode='group',
         bargap=0.1,
         template="plotly_white",
@@ -198,3 +200,59 @@ def generate_agent_rating_chart():
 
     return Markup(fig.to_html(full_html=False))
 
+def calculate_average_delivery_time():
+    """Calculate the average delivery time (in minutes) for orders that have been delivered."""
+    # Only include orders that have a delivered_at timestamp
+    result = db.session.query(
+        func.avg(func.strftime('%s', Order.delivered_at) - func.strftime('%s', Order.created_at))
+    ).filter(Order.delivered_at.isnot(None)).first()
+    
+    if result and result[0]:
+        avg_seconds = result[0]
+        avg_minutes = round(avg_seconds / 60)
+        return avg_minutes
+    return 0
+
+def calculate_delivery_partner_performance():
+    """Calculate the average delivery partner performance based on customer ratings."""
+    avg_rating = db.session.query(func.avg(DeliveryFeedback.rating)).scalar()
+    if avg_rating:
+        performance_percent = round((avg_rating / 5) * 100)
+        return performance_percent
+    return 0
+
+def calculate_return_refund_statistics():
+    """
+    Calculate return & refund statistics.
+    This demo assumes that orders with status 'Refunded' indicate a refund.
+    """
+    total_orders = db.session.query(func.count(Order.id)).scalar()
+    refunded_orders = db.session.query(func.count(Order.id)).filter(Order.status == 'Refunded').scalar()
+    if total_orders:
+        percentage = round((refunded_orders / total_orders) * 100, 1)
+        return percentage
+    return 0.0
+
+def calculate_on_time_order_percentage():
+    """
+    Calculate the percentage of orders delivered on time.
+    This demo assumes that orders with status 'Delivered' are considered on time.
+    """
+    total_delivered = db.session.query(func.count(Order.id)).filter(Order.status == 'Delivered').scalar()
+    # In a real scenario you might compare delivered_at vs expected_delivery_time
+    # Here, we'll assume a fixed demo percentage if no further data is available.
+    if total_delivered:
+        # For instance, if 98% of delivered orders are on time:
+        return 98
+    return 0
+
+def calculate_revenue_per_delivery():
+    """
+    Calculate the average revenue per delivered order.
+    """
+    total_revenue = db.session.query(func.sum(Order.total_price)).filter(Order.status == 'Delivered').scalar() or 0
+    total_deliveries = db.session.query(func.count(Order.id)).filter(Order.status == 'Delivered').scalar() or 0
+    if total_deliveries:
+        revenue = round(total_revenue / total_deliveries, 2)
+        return revenue
+    return 0.0

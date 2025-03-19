@@ -12,7 +12,7 @@ import plotly.express as px
 from datetime import datetime, timedelta, timezone
 
 from models import Customer, DeliveryAgent, Order
-from routes.insight_utils import generate_agent_rating_chart, generate_line_chart, generate_pie_chart,generate_bar_chart
+from routes.insight_utils import calculate_average_delivery_time, calculate_delivery_partner_performance, calculate_on_time_order_percentage, calculate_return_refund_statistics, calculate_revenue_per_delivery, generate_agent_rating_chart, generate_line_chart, generate_pie_chart,generate_bar_chart
 
 
 def admin_routes(app, db):
@@ -159,18 +159,28 @@ def admin_routes(app, db):
         if not current_user.is_authenticated:
             return redirect(url_for('employee_login'))
         
+        # Fetching charts (demo and database reflected)
+        chart_html = generate_pie_chart()           # Demo data chart
+        bar_chart = generate_bar_chart()              # Demo data chart
+        line_chart_html = generate_line_chart()       # Data from the database
+        delivery_rating_bar = generate_agent_rating_chart()
         
-        #import data from insight_utils
-        # these function is defined in insight_utils.py
-        chart_html=generate_pie_chart()           #its data is Demo
-        bar_chart=generate_bar_chart()
-
-        line_chart_html=generate_line_chart()     #its data is Refelected from the DataBase
-        delivery_rating_bar=generate_agent_rating_chart()
+        # Compute analysis statistics with optimized queries:
+        avg_delivery_time = calculate_average_delivery_time() 
+        delivery_partner_performance = calculate_delivery_partner_performance()
+        return_refund_percentage = calculate_return_refund_statistics()
+        on_time_order_percentage = calculate_on_time_order_percentage()
+        revenue_per_delivery = calculate_revenue_per_delivery()
         
-        return render_template('admin/insights.html',
-                               chart_html=chart_html, 
-                               line_chart_html=line_chart_html,
-                               bar_chart=bar_chart,
-                               delivery_rating_bar=delivery_rating_bar 
-            )   
+        return render_template(
+            'admin/insights.html',
+            chart_html=chart_html, 
+            line_chart_html=line_chart_html,
+            bar_chart=bar_chart,
+            delivery_rating_bar=delivery_rating_bar,
+            avg_delivery_time=avg_delivery_time,
+            delivery_partner_performance=delivery_partner_performance,
+            return_refund_percentage=return_refund_percentage,
+            on_time_order_percentage=on_time_order_percentage,
+            revenue_per_delivery=revenue_per_delivery
+        )

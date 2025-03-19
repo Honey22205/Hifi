@@ -76,7 +76,7 @@ def generate_line_chart():
     fig.add_trace(go.Bar(y=suppliers, x=late_counts, name="Late", marker=dict(color='#FF8C00'), orientation='h'))
 
     fig.update_layout(
-        title="📦 Delivery Performance by Delivery Agent (Real Data)",
+        title="📦 Delivery Performance by Delivery Agent",
         xaxis=dict(title="Percentage"),
         yaxis=dict(title="Delivery Agent", categoryorder="total ascending"),
         barmode="stack",
@@ -170,6 +170,43 @@ def generate_agent_rating_chart():
     )
 
     return Markup(fig.to_html(full_html=False))
+
+def generate_customer_feedback_chart():
+    # Count ratings for each star value (1 to 5)
+    feedback_counts = {}
+    for rating in range(1, 6):
+        count = Order.query.filter_by(order_feedback=rating).count()
+        feedback_counts[rating] = count
+
+    ratings = list(feedback_counts.keys())
+    counts = list(feedback_counts.values())
+
+    colors = ['#C0504D', '#F79646', '#4F81BD', '#FFDE00', '#0dec05']
+
+    fig = go.Figure(
+        data=[go.Bar(
+            x=[f"{r} Star" for r in ratings],
+            y=counts,
+            marker_color=colors,
+            text=counts,
+            textposition='outside'
+        )]
+    )
+
+    avg_rating = (
+        sum(r * c for r, c in feedback_counts.items()) / sum(counts)
+    ) if sum(counts) > 0 else 0
+
+    fig.update_layout(
+        title=f"Customer Feedback (Average Rating: {avg_rating:.2f} ⭐)",
+        xaxis=dict(title="Ratings"),
+        yaxis=dict(title="Number of Orders"),
+        template="plotly_white",
+        height=400
+    )
+
+    return Markup(fig.to_html(full_html=False))
+
 
 
 

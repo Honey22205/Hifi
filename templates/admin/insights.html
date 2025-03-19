@@ -51,26 +51,17 @@
   <h1>Business Insights Dashboard</h1>
 
   <div class="images-container">
-    <div class="image-box">
-       
-        {{ chart_html}}
-      
-    </div>
-    <div class="image-box">
-      {{line_chart_html}}
-  </div>
 
-  <div class="images-container">
-    <div class="image-box">
-      {{ bar_chart }}
-    </div>
-    <div class="image-box">
-      {{delivery_rating_bar }}
-    </div>
-    
-    <div class="image-box">
-      {{monthly_retention_chart}}
-    </div>
+    {% if charts %}
+
+      {% for chart in charts %}
+        <div class="image-box">
+          {{ chart|safe }}
+        </div>
+      {% endfor %}
+    {% else %}
+    <p>No charts available.</p>
+    {% endif %}
     
   </div>
 </main>

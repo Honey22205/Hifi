@@ -160,11 +160,21 @@ def admin_routes(app, db):
             return redirect(url_for('employee_login'))
         
         # Fetching charts (demo and database reflected)
+
+        charts = []
+
         chart_html = generate_pie_chart()           # Demo data chart
         bar_chart = generate_bar_chart()              # Demo data chart
         line_chart_html = generate_line_chart()       # Data from the database
         delivery_rating_bar = generate_agent_rating_chart()
         monthly_retention_chart=generate_monthly_retention_chart()
+
+        charts.append(chart_html)
+        charts.append(bar_chart)
+        charts.append(line_chart_html)
+        charts.append(delivery_rating_bar)
+        charts.append(monthly_retention_chart)
+
 
 
         
@@ -177,11 +187,7 @@ def admin_routes(app, db):
         
         return render_template(
             'admin/insights.html',
-            chart_html=chart_html, 
-            line_chart_html=line_chart_html,
-            bar_chart=bar_chart,
-            delivery_rating_bar=delivery_rating_bar,
-            monthly_retention_chart=monthly_retention_chart,
+            charts=charts,
 
             avg_delivery_time=avg_delivery_time,
             delivery_partner_performance=delivery_partner_performance,

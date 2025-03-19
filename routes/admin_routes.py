@@ -63,6 +63,7 @@ def admin_routes(app, db):
             fig.update_layout(
                 hovermode="x unified",
                 template="plotly_white",
+                height=400,
                 xaxis=dict(
                     rangeselector=dict(
                         buttons=[

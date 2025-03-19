@@ -149,7 +149,7 @@ def generate_agent_rating_chart():
         fig.add_trace(go.Bar(
             x=agent_names,
             # Use the actual count of ratings instead of the rating value itself
-            y=[ratings_count_per_agent[agent][rating] for agent in agent_names],
+            y=[rating if ratings_count_per_agent[agent][rating] > 0 else 0 for agent in agent_names], # bar height = rating
             name=f"{rating} Star",
             marker_color=colors[rating],
             # Optionally display the count as text
@@ -157,10 +157,12 @@ def generate_agent_rating_chart():
             textposition='inside'
         ))
 
+        
+
     fig.update_layout(
         title="⭐ Delivery Agent Ratings (1 to 5 stars)",
         xaxis=dict(title="Delivery Agent"),
-        yaxis=dict(title="Number of Ratings"),  # Update label to reflect counts
+        yaxis=dict(title="Number of Ratings", tickmode='linear', dtick=1, range=[0, 5]), # Update label to reflect counts
         barmode='group',
         bargap=0.1,
         template="plotly_white",

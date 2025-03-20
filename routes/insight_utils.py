@@ -188,7 +188,7 @@ def generate_customer_feedback_chart():
             x=[f"{r} Star" for r in ratings],
             y=counts,
             marker_color=colors,
-            text=counts,
+            # text=counts,
             textposition='outside'
         )]
     )

@@ -2,28 +2,52 @@
 import plotly.graph_objects as go
 from markupsafe import Markup
 import plotly.io as pio
-from models import DeliveryAgent, Order,DeliveryFeedback
+from models import Address, DeliveryAgent, Order,DeliveryFeedback
 from sqlalchemy import func
 from datetime import timedelta
 import matplotlib.pyplot as plt
 from app import db
 from sqlalchemy import extract
+import plotly.express as px
 
 def generate_pie_chart():
+    # Query all addresses from the database
+    addresses = Address.query.all()
 
-    labels = ['Teens (13-19)', 'Young Adults (20-35)', 'Middle-aged (36-50)', 'Seniors (51+)']
-    sizes = [15, 40, 30, 15]
-    colors = ['#66b3ff', '#99ff99', '#ff9933', '#ff3333']
+    # Build a dictionary of counts based on the first token of address_line (split by comma)
+    category_counts = {}
+    for address in addresses:
+        # Split the address_line using ',' and check for at least 2 parts
+        parts = address.address_line.split(',')
+        if len(parts) > 1:
+            category = parts[1].strip()
+            category_counts[category] = category_counts.get(category, 0) + 1
 
+
+    # If no records found, use a fallback
+    if not category_counts:
+        labels = ['No Data']
+        sizes = [1]
+        colors = ['#d3d3d3']
+    else:
+        labels = list(category_counts.keys())
+        sizes = list(category_counts.values())
+        # Use Plotly's qualitative color palette; adjust if you need more colors
+        colors = px.colors.qualitative.Plotly[:len(labels)]
+    
+    # Optional: set a pull value for slices if you want to highlight slices with count > threshold
+    pull_values = [0.05 if count > 1 else 0 for count in sizes]
+
+    # Create the pie chart
     fig = go.Figure(data=[go.Pie(
         labels=labels,
         values=sizes,
         marker=dict(colors=colors, line=dict(color='#000000', width=1)),
         textinfo='label+percent',
         hoverinfo='label+percent+value',
-        pull=[0, 0.05, 0, 0.05],
+        pull=pull_values,
     )])
-
+    
     fig.update_layout(
         title_text="Customer Demographics Distribution",
         title_x=0.5,
@@ -31,8 +55,8 @@ def generate_pie_chart():
         legend=dict(x=1, y=0.5),
         height=400,
     )
-    # fig.show()
-
+    
+    # Generate HTML for embedding the chart
     chart_html = fig.to_html(full_html=False)
     return Markup(chart_html)
 
